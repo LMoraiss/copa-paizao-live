@@ -9,6 +9,8 @@ import { Layout } from "./components/Layout";
 import { Login } from "./pages/Login";
 import { Matches } from "./pages/Matches";
 import { Standings } from "./pages/Standings";
+import { Teams } from "./pages/Teams";
+import { TeamDetail } from "./pages/TeamDetail";
 import { TopScorers } from "./pages/TopScorers";
 import { Players } from "./pages/Players";
 import { AdminDashboard } from "./pages/AdminDashboard";
@@ -33,6 +35,8 @@ const App = () => (
             }>
               <Route index element={<Matches />} />
               <Route path="standings" element={<Standings />} />
+              <Route path="teams" element={<Teams />} />
+              <Route path="teams/:teamId" element={<TeamDetail />} />
               <Route path="players" element={<Players />} />
               <Route path="scorers" element={<TopScorers />} />
             </Route>

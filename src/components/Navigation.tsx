@@ -9,7 +9,7 @@ export const Navigation = () => {
   const navItems = [
     { to: '/', label: 'Partidas', icon: Calendar },
     { to: '/standings', label: 'Classificação', icon: Trophy },
-    { to: '/players', label: 'Jogadores', icon: Users },
+    { to: '/teams', label: 'Times', icon: Users },
     { to: '/scorers', label: 'Artilheiros', icon: Target },
   ];
 
