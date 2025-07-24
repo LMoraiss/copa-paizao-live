@@ -85,14 +85,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     const initializeAuth = async () => {
       try {
         console.log('🚀 Initializing auth...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
+        if (!mounted) return;
+        
         if (error) {
           console.error('❌ Error getting session:', error);
-          throw error;
+          setLoading(false);
+          return;
         }
 
         console.log('📋 Initial session:', session);
@@ -101,50 +106,93 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (session?.user) {
           console.log('👤 User found in session, creating/fetching profile...');
           setUser(session.user);
-          const profile = await createProfileIfNeeded(session.user);
-          setProfile(profile);
-        }
-      } catch (error) {
-        console.error('❌ Auth initialization error:', error);
-        toast({
-          title: "Erro de autenticação",
-          description: "Erro ao inicializar autenticação. Tente novamente.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('🔄 Auth state changed:', event, session);
-        setSession(session);
-
-        if (session?.user) {
-          setUser(session.user);
           try {
             const profile = await createProfileIfNeeded(session.user);
-            setProfile(profile);
+            if (mounted) {
+              setProfile(profile);
+            }
           } catch (error) {
-            console.error('❌ Error handling auth state change:', error);
-            toast({
-              title: "Erro de perfil",
-              description: "Erro ao carregar perfil do usuário.",
-              variant: "destructive",
-            });
+            console.error('❌ Error loading profile:', error);
+            if (mounted) {
+              setProfile(null);
+              toast({
+                title: "Erro de perfil",
+                description: "Erro ao carregar perfil do usuário.",
+                variant: "destructive",
+              });
+            }
           }
         } else {
           setUser(null);
           setProfile(null);
         }
-        setLoading(false);
+      } catch (error) {
+        console.error('❌ Auth initialization error:', error);
+        if (mounted) {
+          toast({
+            title: "Erro de autenticação",
+            description: "Erro ao inicializar autenticação. Tente novamente.",
+            variant: "destructive",
+          });
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('🔄 Auth state changed:', event, session);
+        
+        if (!mounted) return;
+        
+        setSession(session);
+
+        if (session?.user) {
+          setUser(session.user);
+          
+          // Use setTimeout to prevent blocking the auth callback
+          setTimeout(async () => {
+            if (!mounted) return;
+            
+            try {
+              const profile = await createProfileIfNeeded(session.user);
+              if (mounted) {
+                setProfile(profile);
+              }
+            } catch (error) {
+              console.error('❌ Error handling auth state change:', error);
+              if (mounted) {
+                setProfile(null);
+                toast({
+                  title: "Erro de perfil",
+                  description: "Erro ao carregar perfil do usuário.",
+                  variant: "destructive",
+                });
+              }
+            }
+          }, 0);
+        } else {
+          setUser(null);
+          setProfile(null);
+        }
+        
+        if (mounted) {
+          setLoading(false);
+        }
       }
     );
 
-    return () => subscription.unsubscribe();
+    // THEN initialize auth
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [toast]);
 
   const signIn = async (email: string, password: string) => {
