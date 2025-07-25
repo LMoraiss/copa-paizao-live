@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy, TrendingUp, TrendingDown } from 'lucide-react';
@@ -7,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 interface TeamStanding {
   team_id: string;
   team_name: string;
+  team_logo: string | null;
   matches_played: number;
   wins: number;
   draws: number;
@@ -31,7 +33,7 @@ export const Standings = () => {
       // Get all teams first
       const { data: teams, error: teamsError } = await supabase
         .from('teams')
-        .select('id, name');
+        .select('id, name, logo_url');
 
       if (teamsError) throw teamsError;
 
@@ -53,6 +55,7 @@ export const Standings = () => {
         standingsMap.set(team.id, {
           team_id: team.id,
           team_name: team.name,
+          team_logo: team.logo_url,
           matches_played: 0,
           wins: 0,
           draws: 0,
@@ -193,7 +196,21 @@ export const Standings = () => {
                           {getPositionIcon(index + 1)}
                         </div>
                       </td>
-                      <td className="p-2 font-medium">{team.team_name}</td>
+                      <td className="p-2">
+                        <Link 
+                          to={`/teams/${team.team_id}`}
+                          className="flex items-center space-x-3 hover:text-primary transition-colors font-medium"
+                        >
+                          {team.team_logo && (
+                            <img 
+                              src={team.team_logo} 
+                              alt={team.team_name}
+                              className="w-6 h-6 object-contain"
+                            />
+                          )}
+                          <span>{team.team_name}</span>
+                        </Link>
+                      </td>
                       <td className="text-center p-2">{team.matches_played}</td>
                       <td className="text-center p-2 text-green-600">{team.wins}</td>
                       <td className="text-center p-2 text-yellow-600">{team.draws}</td>

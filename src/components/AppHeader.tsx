@@ -1,4 +1,4 @@
-import { Trophy, LogOut, User } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -16,7 +16,7 @@ export const AppHeader = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Trophy className="h-8 w-8 text-primary" />
+            <img src="/lovable-uploads/f126e355-793b-4a3e-94d1-87de200dafb7.png" alt="Colégio Marista" className="h-8 w-8" />
             <div>
               <h1 className="text-2xl font-bold text-foreground">Copa Paizão</h1>
               <p className="text-sm text-muted-foreground">Arena Live</p>

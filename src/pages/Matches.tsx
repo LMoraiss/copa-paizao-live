@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 
 interface Match {
   id: string;
@@ -101,7 +102,8 @@ export const Matches = () => {
           </Card>
         ) : (
           matches.map((match) => (
-            <Card key={match.id} className="hover:shadow-md transition-shadow">
+            <Link key={match.id} to={`/match/${match.id}`}>
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
@@ -148,6 +150,7 @@ export const Matches = () => {
                 )}
               </CardContent>
             </Card>
+            </Link>
           ))
         )}
       </div>
