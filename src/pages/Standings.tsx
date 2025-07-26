@@ -171,58 +171,84 @@ export const Standings = () => {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto rounded-lg border border-border">
+              <table className="w-full bg-card">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">Pos</th>
-                    <th className="text-left p-2">Time</th>
-                    <th className="text-center p-2">PJ</th>
-                    <th className="text-center p-2">V</th>
-                    <th className="text-center p-2">E</th>
-                    <th className="text-center p-2">D</th>
-                    <th className="text-center p-2">GP</th>
-                    <th className="text-center p-2">GC</th>
-                    <th className="text-center p-2">SG</th>
-                    <th className="text-center p-2 font-bold">PTS</th>
+                  <tr className="bg-gradient-to-r from-muted/50 to-muted/30 border-b-2 border-border">
+                    <th className="text-left p-4 font-bold text-foreground">Pos</th>
+                    <th className="text-left p-4 font-bold text-foreground">Time</th>
+                    <th className="text-center p-4 font-bold text-foreground">PJ</th>
+                    <th className="text-center p-4 font-bold text-foreground">V</th>
+                    <th className="text-center p-4 font-bold text-foreground">E</th>
+                    <th className="text-center p-4 font-bold text-foreground">D</th>
+                    <th className="text-center p-4 font-bold text-foreground">GP</th>
+                    <th className="text-center p-4 font-bold text-foreground">GC</th>
+                    <th className="text-center p-4 font-bold text-foreground">SG</th>
+                    <th className="text-center p-4 font-bold text-foreground">PTS</th>
                   </tr>
                 </thead>
                 <tbody>
                   {standings.map((team, index) => (
-                    <tr key={team.team_id} className="border-b hover:bg-muted/50">
-                      <td className="p-2">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-semibold">{index + 1}</span>
+                    <tr 
+                      key={team.team_id} 
+                      className={`
+                        border-b border-border/50 hover:bg-muted/30 transition-all duration-200 
+                        ${index === 0 ? 'bg-gradient-to-r from-yellow-50/50 to-yellow-100/30 hover:from-yellow-100/50 hover:to-yellow-200/30' : ''}
+                        ${index === 1 || index === 2 ? 'bg-gradient-to-r from-green-50/30 to-green-100/20 hover:from-green-100/40 hover:to-green-200/20' : ''}
+                        ${index >= standings.length - 2 ? 'bg-gradient-to-r from-red-50/30 to-red-100/20 hover:from-red-100/40 hover:to-red-200/20' : ''}
+                      `}
+                    >
+                      <td className="p-4">
+                        <div className="flex items-center space-x-3">
+                          <div className={`
+                            w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
+                            ${index === 0 ? 'bg-yellow-500 text-white shadow-lg' : ''}
+                            ${index === 1 || index === 2 ? 'bg-green-500 text-white shadow-md' : ''}
+                            ${index >= standings.length - 2 ? 'bg-red-500 text-white shadow-md' : ''}
+                            ${index > 2 && index < standings.length - 2 ? 'bg-muted text-muted-foreground' : ''}
+                          `}>
+                            {index + 1}
+                          </div>
                           {getPositionIcon(index + 1)}
                         </div>
                       </td>
-                      <td className="p-2">
+                      <td className="p-4">
                         <Link 
                           to={`/teams/${team.team_id}`}
-                          className="flex items-center space-x-3 hover:text-primary transition-colors font-medium"
+                          className="flex items-center space-x-3 hover:text-primary transition-colors font-medium group"
                         >
                           {team.team_logo && (
-                            <img 
-                              src={team.team_logo} 
-                              alt={team.team_name}
-                              className="w-6 h-6 object-contain"
-                            />
+                            <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
+                              <img 
+                                src={team.team_logo} 
+                                alt={team.team_name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                              />
+                            </div>
                           )}
-                          <span>{team.team_name}</span>
+                          <span className="group-hover:font-semibold transition-all">{team.team_name}</span>
                         </Link>
                       </td>
-                      <td className="text-center p-2">{team.matches_played}</td>
-                      <td className="text-center p-2 text-green-600">{team.wins}</td>
-                      <td className="text-center p-2 text-yellow-600">{team.draws}</td>
-                      <td className="text-center p-2 text-red-600">{team.losses}</td>
-                      <td className="text-center p-2">{team.goals_for}</td>
-                      <td className="text-center p-2">{team.goals_against}</td>
-                      <td className="text-center p-2">
-                        <span className={team.goal_difference >= 0 ? "text-green-600" : "text-red-600"}>
-                          {team.goal_difference >= 0 ? '+' : ''}{team.goal_difference}
+                      <td className="text-center p-4 font-medium">{team.matches_played}</td>
+                      <td className="text-center p-4 font-semibold text-green-600">{team.wins}</td>
+                      <td className="text-center p-4 font-semibold text-yellow-600">{team.draws}</td>
+                      <td className="text-center p-4 font-semibold text-red-600">{team.losses}</td>
+                      <td className="text-center p-4 font-medium">{team.goals_for}</td>
+                      <td className="text-center p-4 font-medium">{team.goals_against}</td>
+                      <td className="text-center p-4">
+                        <span className={`font-bold px-2 py-1 rounded text-sm ${
+                          team.goal_difference > 0 ? "text-green-700 bg-green-100" : 
+                          team.goal_difference < 0 ? "text-red-700 bg-red-100" : 
+                          "text-gray-700 bg-gray-100"
+                        }`}>
+                          {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
                         </span>
                       </td>
-                      <td className="text-center p-2 font-bold text-primary">{team.points}</td>
+                      <td className="text-center p-4">
+                        <div className="font-bold text-lg text-primary bg-primary/10 rounded-full w-10 h-10 flex items-center justify-center mx-auto">
+                          {team.points}
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

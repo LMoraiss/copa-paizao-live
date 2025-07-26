@@ -92,40 +92,60 @@ export const MatchTimeline = ({ events }: MatchTimelineProps) => {
   }
 
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-background to-muted/20">
       <CardHeader>
-        <CardTitle>Timeline da Partida</CardTitle>
+        <CardTitle className="flex items-center space-x-2">
+          <Clock className="h-5 w-5" />
+          <span>Timeline da Partida</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {events.map((event, index) => (
-            <div key={event.id} className="flex items-start space-x-4 p-4 border rounded-lg">
-              <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-muted">
-                {getEventIcon(event.event_type)}
+            <div 
+              key={event.id} 
+              className="group relative flex items-start space-x-4 p-4 bg-card border border-border rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] animate-fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              {/* Event Icon with animated background */}
+              <div className="flex-shrink-0 relative">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 border-2 border-primary/30 group-hover:border-primary/50 transition-colors">
+                  {getEventIcon(event.event_type)}
+                </div>
+                {/* Timeline connector */}
+                {index < events.length - 1 && (
+                  <div className="absolute top-12 left-1/2 transform -translate-x-1/2 w-0.5 h-6 bg-gradient-to-b from-primary/30 to-transparent"></div>
+                )}
               </div>
               
               <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2 mb-1">
-                  <Badge variant={getEventBadgeVariant(event.event_type)}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <Badge 
+                    variant={getEventBadgeVariant(event.event_type)}
+                    className="text-xs font-semibold px-2 py-1"
+                  >
                     {getEventLabel(event.event_type)}
                   </Badge>
-                  <span className="text-sm font-medium">{event.minute}'</span>
+                  <div className="flex items-center space-x-1">
+                    <Clock className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-sm font-bold text-primary">{event.minute}'</span>
+                  </div>
                 </div>
                 
                 {event.player && (
-                  <p className="text-sm font-medium text-foreground mb-1">
+                  <p className="text-base font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
                     {event.player.name}
                   </p>
                 )}
                 
                 {event.description && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {event.description}
                   </p>
                 )}
               </div>
               
-              <div className="flex-shrink-0 text-xs text-muted-foreground">
+              <div className="flex-shrink-0 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
                 {new Date(event.created_at).toLocaleTimeString('pt-BR', {
                   hour: '2-digit',
                   minute: '2-digit'
@@ -134,6 +154,17 @@ export const MatchTimeline = ({ events }: MatchTimelineProps) => {
             </div>
           ))}
         </div>
+        
+        {/* Beautiful timeline end marker */}
+        {events.length > 0 && (
+          <div className="flex items-center justify-center mt-6 pt-4 border-t border-dashed border-border">
+            <div className="flex items-center space-x-2 text-muted-foreground">
+              <div className="w-2 h-2 rounded-full bg-primary/30"></div>
+              <span className="text-sm">Início da partida</span>
+              <div className="w-2 h-2 rounded-full bg-primary/30"></div>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

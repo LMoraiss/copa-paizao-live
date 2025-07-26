@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { User, Target } from 'lucide-react';
 
 interface Player {
   id: string;
@@ -67,87 +69,143 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
   };
 
   const renderPlayerCard = (player: Player, isHome: boolean) => (
-    <div
-      key={player.id}
-      className={`flex flex-col items-center p-2 rounded-lg border-2 transition-all ${
-        isHome 
-          ? 'bg-blue-50 border-blue-200 text-blue-900' 
-          : 'bg-red-50 border-red-200 text-red-900'
-      }`}
-    >
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mb-1 ${
-        isHome ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'
-      }`}>
-        {player.jersey_number}
-      </div>
-      <span className="text-xs font-medium text-center leading-tight">
-        {player.name}
-      </span>
-    </div>
+    <Dialog key={player.id}>
+      <DialogTrigger asChild>
+        <div
+          className={`flex flex-col items-center p-2 rounded-xl border-2 transition-all cursor-pointer hover:scale-110 hover:shadow-lg group ${
+            isHome 
+              ? 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300 text-blue-900 hover:border-blue-400' 
+              : 'bg-gradient-to-br from-red-50 to-red-100 border-red-300 text-red-900 hover:border-red-400'
+          }`}
+        >
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mb-1 shadow-md group-hover:shadow-lg transition-all ${
+            isHome ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white' : 'bg-gradient-to-br from-red-600 to-red-700 text-white'
+          }`}>
+            {player.jersey_number}
+          </div>
+          <span className="text-xs font-semibold text-center leading-tight group-hover:text-primary transition-colors">
+            {player.name.split(' ')[0]}
+          </span>
+        </div>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            <User className="h-5 w-5" />
+            <span>Detalhes do Jogador</span>
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 p-4">
+          <div className="flex items-center space-x-4">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold shadow-lg ${
+              isHome ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white' : 'bg-gradient-to-br from-red-600 to-red-700 text-white'
+            }`}>
+              {player.jersey_number}
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">{player.name}</h3>
+              <p className="text-muted-foreground capitalize">{player.position}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="font-medium">Número:</span>
+              <span className="ml-2">{player.jersey_number}</span>
+            </div>
+            <div>
+              <span className="font-medium">Posição:</span>
+              <span className="ml-2 capitalize">{player.position}</span>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 
   const renderFormation = (players: Player[], isHome: boolean, teamName: string) => {
-    const goalkeepers = getPlayersByPosition(players, 'goalkeeper');
-    const defenders = getPlayersByPosition(players, 'defender');
-    const midfielders = getPlayersByPosition(players, 'midfielder');
-    const forwards = getPlayersByPosition(players, 'forward');
+    const goalkeepers = getPlayersByPosition(players, 'goleiro');
+    const defenders = getPlayersByPosition(players, 'zagueiro');
+    const midfielders = getPlayersByPosition(players, 'meio-campo');
+    const forwards = getPlayersByPosition(players, 'atacante');
 
     return (
-      <div className="relative h-96 w-full">
-        {/* Field Background */}
-        <div className={`absolute inset-0 bg-gradient-to-b ${
-          isHome 
-            ? 'from-green-200 to-green-300' 
-            : 'from-green-300 to-green-200'
-        } rounded-lg border-2 border-white`}>
-          {/* Field Lines */}
-          <div className="absolute inset-x-0 top-1/2 h-0.5 bg-white transform -translate-y-0.5"></div>
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white transform -translate-x-0.5"></div>
+      <div className="relative h-[500px] w-full">
+        {/* Realistic Field Background with 3D effect */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-green-500 to-green-600 rounded-xl border-4 border-white shadow-2xl overflow-hidden">
+          {/* Grass texture overlay */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="w-full h-full" style={{
+              backgroundImage: `repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 20px,
+                rgba(255,255,255,0.1) 20px,
+                rgba(255,255,255,0.1) 22px
+              )`
+            }}></div>
+          </div>
           
-          {/* Center Circle */}
-          <div className="absolute left-1/2 top-1/2 w-16 h-16 border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-          
-          {/* Goal Areas */}
-          <div className={`absolute ${isHome ? 'bottom-0' : 'top-0'} left-1/2 w-24 h-12 border-2 border-white transform -translate-x-1/2`}></div>
-          <div className={`absolute ${isHome ? 'bottom-0' : 'top-0'} left-1/2 w-16 h-8 border-2 border-white transform -translate-x-1/2`}></div>
+          {/* Field markings with shadows */}
+          <div className="absolute inset-4 border-4 border-white rounded-lg shadow-inner">
+            {/* Center line and circle */}
+            <div className="absolute inset-x-0 top-1/2 h-1 bg-white transform -translate-y-0.5 shadow-sm"></div>
+            <div className="absolute left-1/2 top-1/2 w-20 h-20 border-4 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-sm"></div>
+            <div className="absolute left-1/2 top-1/2 w-2 h-2 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+            
+            {/* Goal areas with enhanced styling */}
+            <div className={`absolute ${isHome ? 'bottom-0' : 'top-0'} left-1/2 w-32 h-16 border-4 border-white transform -translate-x-1/2 bg-white/10 shadow-sm`}></div>
+            <div className={`absolute ${isHome ? 'bottom-0' : 'top-0'} left-1/2 w-20 h-10 border-4 border-white transform -translate-x-1/2 bg-white/15 shadow-sm`}></div>
+            
+            {/* Corner arcs */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-full"></div>
+            <div className="absolute top-0 right-0 w-8 h-8 border-b-4 border-l-4 border-white rounded-bl-full"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-full"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-full"></div>
+          </div>
         </div>
 
-        {/* Players Positioning */}
-        <div className="absolute inset-0 p-4">
+        {/* Enhanced Players Positioning */}
+        <div className="absolute inset-0 p-6">
           {/* Goalkeepers */}
-          <div className={`absolute ${isHome ? 'bottom-4' : 'top-4'} left-1/2 transform -translate-x-1/2`}>
-            <div className="flex space-x-2">
+          <div className={`absolute ${isHome ? 'bottom-6' : 'top-6'} left-1/2 transform -translate-x-1/2`}>
+            <div className="flex space-x-3">
               {goalkeepers.slice(0, 1).map(player => renderPlayerCard(player, isHome))}
             </div>
           </div>
 
           {/* Defenders */}
-          <div className={`absolute ${isHome ? 'bottom-16' : 'top-16'} left-1/2 transform -translate-x-1/2`}>
-            <div className="flex space-x-4">
+          <div className={`absolute ${isHome ? 'bottom-20' : 'top-20'} left-1/2 transform -translate-x-1/2`}>
+            <div className="flex space-x-6">
               {defenders.slice(0, 4).map(player => renderPlayerCard(player, isHome))}
             </div>
           </div>
 
           {/* Midfielders */}
-          <div className={`absolute ${isHome ? 'bottom-32' : 'top-32'} left-1/2 transform -translate-x-1/2`}>
-            <div className="flex space-x-4">
+          <div className={`absolute ${isHome ? 'bottom-40' : 'top-40'} left-1/2 transform -translate-x-1/2`}>
+            <div className="flex space-x-6">
               {midfielders.slice(0, 4).map(player => renderPlayerCard(player, isHome))}
             </div>
           </div>
 
           {/* Forwards */}
-          <div className={`absolute ${isHome ? 'bottom-48' : 'top-48'} left-1/2 transform -translate-x-1/2`}>
-            <div className="flex space-x-4">
+          <div className={`absolute ${isHome ? 'bottom-60' : 'top-60'} left-1/2 transform -translate-x-1/2`}>
+            <div className="flex space-x-6">
               {forwards.slice(0, 3).map(player => renderPlayerCard(player, isHome))}
             </div>
           </div>
         </div>
 
-        {/* Team Name */}
-        <div className={`absolute ${isHome ? 'top-2' : 'bottom-2'} left-2`}>
-          <Badge variant={isHome ? 'default' : 'destructive'}>
-            {teamName}
-          </Badge>
+        {/* Enhanced Team Badge */}
+        <div className={`absolute ${isHome ? 'top-4' : 'bottom-4'} left-4`}>
+          <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+            <Target className="h-4 w-4" />
+            <Badge 
+              variant={isHome ? 'default' : 'destructive'}
+              className="font-bold shadow-sm"
+            >
+              {teamName}
+            </Badge>
+          </div>
         </div>
       </div>
     );
@@ -163,23 +221,29 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Home Team Field */}
-      <Card>
+      <Card className="bg-gradient-to-br from-blue-50/30 to-blue-100/20 border-blue-200">
         <CardHeader>
-          <CardTitle className="text-blue-700">{homeTeamName} - Escalação</CardTitle>
+          <CardTitle className="flex items-center space-x-2 text-blue-700">
+            <Target className="h-5 w-5" />
+            <span>{homeTeamName} - Escalação</span>
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {renderFormation(homePlayers, true, homeTeamName)}
         </CardContent>
       </Card>
 
       {/* Away Team Field */}
-      <Card>
+      <Card className="bg-gradient-to-br from-red-50/30 to-red-100/20 border-red-200">
         <CardHeader>
-          <CardTitle className="text-red-700">{awayTeamName} - Escalação</CardTitle>
+          <CardTitle className="flex items-center space-x-2 text-red-700">
+            <Target className="h-5 w-5" />
+            <span>{awayTeamName} - Escalação</span>
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {renderFormation(awayPlayers, false, awayTeamName)}
         </CardContent>
       </Card>
