@@ -32,16 +32,14 @@ interface CreateMatchFormProps {
 }
 
 const stages = [
-  'Fase de Grupos',
-  'Oitavas de Final',
-  'Quartas de Final',
-  'Semifinal',
-  'Final'
+  { value: 'group_stage', label: 'Fase de Grupos' },
+  { value: 'semi_finals', label: 'Semifinal' },
+  { value: 'final', label: 'Final' }
 ];
 
 const statuses = [
-  'scheduled',
-  'finished'
+  { value: 'scheduled', label: 'Agendada' },
+  { value: 'finished', label: 'Finalizada' }
 ];
 
 export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormProps) => {
@@ -241,8 +239,8 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
               </SelectTrigger>
               <SelectContent>
                 {stages.map((stageOption) => (
-                  <SelectItem key={stageOption} value={stageOption}>
-                    {stageOption}
+                  <SelectItem key={stageOption.value} value={stageOption.value}>
+                    {stageOption.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -256,8 +254,11 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
                 <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="scheduled">Agendada</SelectItem>
-                <SelectItem value="finished">Finalizada</SelectItem>
+                {statuses.map((statusOption) => (
+                  <SelectItem key={statusOption.value} value={statusOption.value}>
+                    {statusOption.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

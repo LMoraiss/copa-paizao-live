@@ -23,26 +23,26 @@ export const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="teams" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="teams" className="flex items-center space-x-2">
+        <TabsList className="grid w-full grid-cols-5 h-auto">
+          <TabsTrigger value="teams" className="flex flex-col items-center space-y-1 p-3 text-xs">
             <Users className="h-4 w-4" />
-            <span>Times</span>
+            <span className="hidden sm:inline">Times</span>
           </TabsTrigger>
-          <TabsTrigger value="players" className="flex items-center space-x-2">
+          <TabsTrigger value="players" className="flex flex-col items-center space-y-1 p-3 text-xs">
             <Users className="h-4 w-4" />
-            <span>Jogadores</span>
+            <span className="hidden sm:inline">Jogadores</span>
           </TabsTrigger>
-          <TabsTrigger value="matches" className="flex items-center space-x-2">
+          <TabsTrigger value="matches" className="flex flex-col items-center space-y-1 p-3 text-xs">
             <Calendar className="h-4 w-4" />
-            <span>Partidas</span>
+            <span className="hidden sm:inline">Partidas</span>
           </TabsTrigger>
-          <TabsTrigger value="standings" className="flex items-center space-x-2">
+          <TabsTrigger value="standings" className="flex flex-col items-center space-y-1 p-3 text-xs">
             <Trophy className="h-4 w-4" />
-            <span>Classificação</span>
+            <span className="hidden sm:inline">Classificação</span>
           </TabsTrigger>
-          <TabsTrigger value="results" className="flex items-center space-x-2">
+          <TabsTrigger value="results" className="flex flex-col items-center space-y-1 p-3 text-xs">
             <Settings className="h-4 w-4" />
-            <span>Configurações</span>
+            <span className="hidden sm:inline">Config</span>
           </TabsTrigger>
         </TabsList>
 

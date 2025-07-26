@@ -70,7 +70,7 @@ const SoccerField = ({ players }: { players: Player[] }) => {
     <div className="flex justify-center p-4">
       <svg width={fieldWidth} height={fieldHeight} className="border rounded-lg">
         {/* Field background */}
-        <rect width={fieldWidth} height={fieldHeight} fill="hsl(var(--muted))" />
+        <rect width={fieldWidth} height={fieldHeight} fill="#22c55e" />
         
         {/* Field markings */}
         <rect x="50" y="0" width="300" height={fieldHeight} fill="none" stroke="white" strokeWidth="2" />
