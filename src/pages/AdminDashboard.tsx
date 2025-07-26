@@ -6,6 +6,7 @@ import { Settings, Users, Calendar, Trophy, Plus } from 'lucide-react';
 import { CreateTeamForm } from '@/components/admin/CreateTeamForm';
 import { CreatePlayerForm } from '@/components/admin/CreatePlayerForm';
 import { CreateMatchForm } from '@/components/admin/CreateMatchForm';
+import { StandingsManager } from '@/components/admin/StandingsManager';
 
 export const AdminDashboard = () => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -22,7 +23,7 @@ export const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="teams" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="teams" className="flex items-center space-x-2">
             <Users className="h-4 w-4" />
             <span>Times</span>
@@ -35,9 +36,13 @@ export const AdminDashboard = () => {
             <Calendar className="h-4 w-4" />
             <span>Partidas</span>
           </TabsTrigger>
-          <TabsTrigger value="results" className="flex items-center space-x-2">
+          <TabsTrigger value="standings" className="flex items-center space-x-2">
             <Trophy className="h-4 w-4" />
-            <span>Resultados</span>
+            <span>Classificação</span>
+          </TabsTrigger>
+          <TabsTrigger value="results" className="flex items-center space-x-2">
+            <Settings className="h-4 w-4" />
+            <span>Configurações</span>
           </TabsTrigger>
         </TabsList>
 
@@ -51,6 +56,10 @@ export const AdminDashboard = () => {
 
         <TabsContent value="matches" className="space-y-6">
           <CreateMatchForm onSuccess={handleFormSuccess} />
+        </TabsContent>
+
+        <TabsContent value="standings" className="space-y-6">
+          <StandingsManager />
         </TabsContent>
 
         <TabsContent value="results" className="space-y-6">

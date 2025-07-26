@@ -41,9 +41,7 @@ const stages = [
 
 const statuses = [
   'scheduled',
-  'live',
-  'finished',
-  'postponed'
+  'finished'
 ];
 
 export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormProps) => {
@@ -259,14 +257,12 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="scheduled">Agendada</SelectItem>
-                <SelectItem value="live">Ao Vivo</SelectItem>
                 <SelectItem value="finished">Finalizada</SelectItem>
-                <SelectItem value="postponed">Adiada</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {(status === 'finished' || status === 'live') && (
+          {status === 'finished' && (
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="homeScore">Gols Casa</Label>
