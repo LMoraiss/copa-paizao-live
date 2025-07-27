@@ -12,6 +12,7 @@ import { MatchControlPanel } from '@/components/match/MatchControlPanel';
 import { MatchTimeline } from '@/components/match/MatchTimeline';
 import { MatchLineups } from '@/components/match/MatchLineups';
 import { MatchStandings } from '@/components/match/MatchStandings';
+import { LiveMatchTimer } from '@/components/LiveMatchTimer';
 
 interface Match {
   id: string;
@@ -175,6 +176,15 @@ export const LiveMatch = () => {
                   minute: '2-digit'
                 })}
               </span>
+              {match.status === 'live' && (
+                <div className="ml-4 bg-primary text-primary-foreground px-3 py-1 rounded-full">
+                  <LiveMatchTimer 
+                    matchDate={match.match_date} 
+                    status={match.status}
+                    className="text-primary-foreground"
+                  />
+                </div>
+              )}
             </div>
             {getStatusBadge(match.status)}
           </div>

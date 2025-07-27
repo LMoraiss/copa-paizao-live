@@ -17,6 +17,14 @@ interface TeamStanding {
   goals_against: number;
   goal_difference: number;
   points: number;
+  isLive?: boolean;
+  liveMatchInfo?: {
+    opponentName: string;
+    homeScore: number;
+    awayScore: number;
+    isHome: boolean;
+    matchId: string;
+  };
 }
 
 export const Standings = () => {
@@ -26,6 +34,24 @@ export const Standings = () => {
 
   useEffect(() => {
     fetchStandings();
+    
+    // Subscribe to real-time match updates to update standings
+    const matchChannel = supabase
+      .channel('standings-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'matches'
+        },
+        () => fetchStandings()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(matchChannel);
+    };
   }, []);
 
   const fetchStandings = async () => {
@@ -37,13 +63,20 @@ export const Standings = () => {
 
       if (teamsError) throw teamsError;
 
-      // Get all finished matches
-      const { data: matches, error: matchesError } = await supabase
+      // Get all finished matches and live matches
+      const { data: allMatches, error: matchesError } = await supabase
         .from('matches')
-        .select('*')
-        .eq('status', 'finished')
+        .select(`
+          *,
+          home_team:teams!home_team_id(id, name, logo_url),
+          away_team:teams!away_team_id(id, name, logo_url)
+        `)
+        .in('status', ['finished', 'live'])
         .not('home_score', 'is', null)
         .not('away_score', 'is', null);
+      
+      const finishedMatches = allMatches?.filter(match => match.status === 'finished') || [];
+      const liveMatches = allMatches?.filter(match => match.status === 'live') || [];
 
       if (matchesError) throw matchesError;
 
@@ -52,6 +85,10 @@ export const Standings = () => {
 
       // Initialize all teams
       teams?.forEach(team => {
+        const liveMatch = liveMatches.find(match => 
+          match.home_team.id === team.id || match.away_team.id === team.id
+        );
+
         standingsMap.set(team.id, {
           team_id: team.id,
           team_name: team.name,
@@ -64,11 +101,19 @@ export const Standings = () => {
           goals_against: 0,
           goal_difference: 0,
           points: 0,
+          isLive: !!liveMatch,
+          liveMatchInfo: liveMatch ? {
+            opponentName: liveMatch.home_team.id === team.id ? liveMatch.away_team.name : liveMatch.home_team.name,
+            homeScore: liveMatch.home_score || 0,
+            awayScore: liveMatch.away_score || 0,
+            isHome: liveMatch.home_team.id === team.id,
+            matchId: liveMatch.id
+          } : undefined
         });
       });
 
-      // Process matches
-      matches?.forEach(match => {
+      // Process finished matches only for standings calculation
+      finishedMatches?.forEach(match => {
         const homeTeam = standingsMap.get(match.home_team_id);
         const awayTeam = standingsMap.get(match.away_team_id);
 
@@ -189,13 +234,14 @@ export const Standings = () => {
                 </thead>
                 <tbody>
                   {standings.map((team, index) => (
-                    <tr 
+                     <tr 
                       key={team.team_id} 
                       className={`
                         border-b border-border/50 hover:bg-muted/30 transition-all duration-200 
-                        ${index === 0 ? 'bg-gradient-to-r from-yellow-50/50 to-yellow-100/30 hover:from-yellow-100/50 hover:to-yellow-200/30' : ''}
-                        ${index === 1 || index === 2 ? 'bg-gradient-to-r from-green-50/30 to-green-100/20 hover:from-green-100/40 hover:to-green-200/20' : ''}
-                        ${index >= standings.length - 2 ? 'bg-gradient-to-r from-red-50/30 to-red-100/20 hover:from-red-100/40 hover:to-red-200/20' : ''}
+                        ${team.isLive ? 'bg-gradient-to-r from-red-50/40 to-red-100/30 hover:from-red-100/50 hover:to-red-200/30 animate-pulse' : ''}
+                        ${!team.isLive && index === 0 ? 'bg-gradient-to-r from-yellow-50/50 to-yellow-100/30 hover:from-yellow-100/50 hover:to-yellow-200/30' : ''}
+                        ${!team.isLive && (index === 1 || index === 2) ? 'bg-gradient-to-r from-green-50/30 to-green-100/20 hover:from-green-100/40 hover:to-green-200/20' : ''}
+                        ${!team.isLive && index >= standings.length - 2 ? 'bg-gradient-to-r from-red-50/30 to-red-100/20 hover:from-red-100/40 hover:to-red-200/20' : ''}
                       `}
                     >
                       <td className="p-4">
@@ -226,7 +272,23 @@ export const Standings = () => {
                               />
                             </div>
                           )}
-                          <span className="group-hover:font-semibold transition-all">{team.team_name}</span>
+                           <div className="flex flex-col">
+                             <span className="group-hover:font-semibold transition-all">{team.team_name}</span>
+                             {team.isLive && team.liveMatchInfo && (
+                               <div className="text-xs text-red-600 font-medium mt-1 animate-pulse">
+                                 🔴 vs {team.liveMatchInfo.opponentName} {' '}
+                                 <Link 
+                                   to={`/match/${team.liveMatchInfo.matchId}`}
+                                   className="hover:underline"
+                                 >
+                                   {team.liveMatchInfo.isHome 
+                                     ? `${team.liveMatchInfo.homeScore}-${team.liveMatchInfo.awayScore}`
+                                     : `${team.liveMatchInfo.awayScore}-${team.liveMatchInfo.homeScore}`
+                                   }
+                                 </Link>
+                               </div>
+                             )}
+                           </div>
                         </Link>
                       </td>
                       <td className="text-center p-4 font-medium">{team.matches_played}</td>

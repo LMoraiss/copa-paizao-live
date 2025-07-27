@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Trophy, Mail, Lock, AlertCircle, User } from 'lucide-react';
+import { Mail, Lock, AlertCircle, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -66,7 +66,11 @@ export const Login = () => {
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Trophy className="h-12 w-12 text-white" />
+            <img 
+              src="/lovable-uploads/f126e355-793b-4a3e-94d1-87de200dafb7.png" 
+              alt="Marista Logo" 
+              className="h-16 w-16 object-contain"
+            />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Copa Paizão</h1>
           <p className="text-white/80">Sistema de Gerenciamento de Torneio</p>

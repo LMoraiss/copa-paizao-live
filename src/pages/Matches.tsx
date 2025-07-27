@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
+import { LiveMatchTimer } from '@/components/LiveMatchTimer';
 
 interface Match {
   id: string;
@@ -15,8 +16,8 @@ interface Match {
   home_score: number | null;
   away_score: number | null;
   location: string | null;
-  home_team: { name: string };
-  away_team: { name: string };
+  home_team: { name: string; logo_url: string | null };
+  away_team: { name: string; logo_url: string | null };
 }
 
 export const Matches = () => {
@@ -26,6 +27,24 @@ export const Matches = () => {
 
   useEffect(() => {
     fetchMatches();
+    
+    // Subscribe to real-time match updates
+    const matchChannel = supabase
+      .channel('matches-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'matches'
+        },
+        () => fetchMatches()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(matchChannel);
+    };
   }, []);
 
   const fetchMatches = async () => {
@@ -34,8 +53,8 @@ export const Matches = () => {
         .from('matches')
         .select(`
           *,
-          home_team:teams!home_team_id(name),
-          away_team:teams!away_team_id(name)
+          home_team:teams!home_team_id(name, logo_url),
+          away_team:teams!away_team_id(name, logo_url)
         `)
         .order('match_date', { ascending: true });
 
@@ -58,7 +77,7 @@ export const Matches = () => {
       case 'scheduled':
         return <Badge variant="secondary">Agendada</Badge>;
       case 'live':
-        return <Badge className="bg-red-500 text-white">Ao Vivo</Badge>;
+        return <Badge className="bg-red-500 text-white animate-pulse">🔴 AO VIVO</Badge>;
       case 'finished':
         return <Badge variant="outline">Finalizada</Badge>;
       default:
@@ -118,17 +137,31 @@ export const Matches = () => {
                         minute: '2-digit'
                       })}
                     </span>
+                    <LiveMatchTimer 
+                      matchDate={match.match_date} 
+                      status={match.status}
+                      className="ml-4 text-primary"
+                    />
                   </div>
-                  {getStatusBadge(match.status)}
+                  <div className="flex items-center space-x-2">
+                    {getStatusBadge(match.status)}
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex-1 text-center">
+                  <div className="flex-1 flex items-center justify-center space-x-3">
+                    {match.home_team.logo_url && (
+                      <img 
+                        src={match.home_team.logo_url} 
+                        alt={match.home_team.name}
+                        className="w-8 h-8 object-contain"
+                      />
+                    )}
                     <h3 className="font-semibold text-lg">{match.home_team.name}</h3>
                   </div>
                   
                   <div className="flex-shrink-0 mx-8 text-center">
-                    {match.status === 'finished' && match.home_score !== null && match.away_score !== null ? (
+                    {(match.status === 'finished' || match.status === 'live') && match.home_score !== null && match.away_score !== null ? (
                       <div className="text-2xl font-bold">
                         {match.home_score} - {match.away_score}
                       </div>
@@ -137,8 +170,15 @@ export const Matches = () => {
                     )}
                   </div>
                   
-                  <div className="flex-1 text-center">
+                  <div className="flex-1 flex items-center justify-center space-x-3">
                     <h3 className="font-semibold text-lg">{match.away_team.name}</h3>
+                    {match.away_team.logo_url && (
+                      <img 
+                        src={match.away_team.logo_url} 
+                        alt={match.away_team.name}
+                        className="w-8 h-8 object-contain"
+                      />
+                    )}
                   </div>
                 </div>
 
