@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Goal, Clock, AlertTriangle, RotateCcw, Flag, Coffee, Trophy } from 'lucide-react';
+import { Circle, Clock, CreditCard, ArrowUpDown, Flag, Coffee, Trophy } from 'lucide-react';
 
 interface MatchEvent {
   id: string;
@@ -19,13 +19,13 @@ export const MatchTimeline = ({ events }: MatchTimelineProps) => {
   const getEventIcon = (eventType: string) => {
     switch (eventType) {
       case 'goal':
-        return <Goal className="h-5 w-5 text-green-600" />;
+        return <Circle className="h-5 w-5 text-green-600" />;
       case 'yellow_card':
-        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+        return <CreditCard className="h-5 w-5 text-yellow-500" />;
       case 'red_card':
-        return <AlertTriangle className="h-5 w-5 text-red-500" />;
+        return <CreditCard className="h-5 w-5 text-red-500" />;
       case 'substitution':
-        return <RotateCcw className="h-5 w-5 text-blue-500" />;
+        return <ArrowUpDown className="h-5 w-5 text-blue-500" />;
       case 'corner':
         return <Flag className="h-5 w-5 text-purple-500" />;
       case 'kickoff':

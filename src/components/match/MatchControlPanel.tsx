@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Play, Square, Clock, Target, AlertTriangle, RotateCcw, Pause, PlayCircle, Timer } from 'lucide-react';
+import { Play, Square, Clock, Target, AlertTriangle, RotateCcw, Pause, PlayCircle, Timer, Circle, CreditCard, ArrowUpDown, Undo2 } from 'lucide-react';
 
 interface Match {
   id: string;
@@ -185,7 +185,8 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
 
     setLoading(true);
     try {
-      const { error } = await supabase
+      // First, add the event
+      const { error: eventError } = await supabase
         .from('match_events')
         .insert({
           match_id: match.id,
@@ -195,19 +196,40 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
           description: null
         });
 
-      if (error) throw error;
+      if (eventError) throw eventError;
+
+      // If it's a goal, automatically update the score
+      if (type === 'goal') {
+        const isHomeTeam = selectedTeam === match.home_team_id;
+        const newHomeScore = isHomeTeam ? (match.home_score || 0) + 1 : (match.home_score || 0);
+        const newAwayScore = !isHomeTeam ? (match.away_score || 0) + 1 : (match.away_score || 0);
+
+        const { error: scoreError } = await supabase
+          .from('matches')
+          .update({ 
+            home_score: newHomeScore,
+            away_score: newAwayScore
+          })
+          .eq('id', match.id);
+
+        if (scoreError) throw scoreError;
+
+        // Update local state
+        setHomeScore(newHomeScore.toString());
+        setAwayScore(newAwayScore.toString());
+      }
 
       // Show animated feedback
-      const eventEmoji = {
-        goal: '⚽',
-        yellow_card: '🟨',
-        red_card: '🟥',
-        substitution: '🔄'
-      }[type];
+      const eventLabels = {
+        goal: 'Gol',
+        yellow_card: 'Cartão Amarelo',
+        red_card: 'Cartão Vermelho',
+        substitution: 'Substituição'
+      };
 
       toast({
         title: "Evento Registrado!",
-        description: `${eventEmoji} ${type === 'goal' ? 'Gol' : type === 'yellow_card' ? 'Cartão Amarelo' : type === 'red_card' ? 'Cartão Vermelho' : 'Substituição'} registrado!`,
+        description: `${eventLabels[type as keyof typeof eventLabels]} registrado${type === 'goal' ? ' e placar atualizado' : ''}!`,
       });
       
       setIsEventDialogOpen(false);
@@ -219,6 +241,53 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
       toast({
         title: "Erro",
         description: "Não foi possível adicionar o evento.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeGoalEvent = async (eventId: string, isHomeTeam: boolean) => {
+    setLoading(true);
+    try {
+      // Remove the event
+      const { error: eventError } = await supabase
+        .from('match_events')
+        .delete()
+        .eq('id', eventId);
+
+      if (eventError) throw eventError;
+
+      // Update the score
+      const newHomeScore = isHomeTeam ? Math.max(0, (match.home_score || 0) - 1) : (match.home_score || 0);
+      const newAwayScore = !isHomeTeam ? Math.max(0, (match.away_score || 0) - 1) : (match.away_score || 0);
+
+      const { error: scoreError } = await supabase
+        .from('matches')
+        .update({ 
+          home_score: newHomeScore,
+          away_score: newAwayScore
+        })
+        .eq('id', match.id);
+
+      if (scoreError) throw scoreError;
+
+      // Update local state
+      setHomeScore(newHomeScore.toString());
+      setAwayScore(newAwayScore.toString());
+
+      toast({
+        title: "Gol Anulado!",
+        description: "Evento removido e placar atualizado.",
+      });
+      
+      onUpdate();
+    } catch (error) {
+      console.error('Error removing goal:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível anular o gol.",
         variant: "destructive",
       });
     } finally {
@@ -434,25 +503,25 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <EventButton 
                 type="goal" 
-                icon="⚽" 
+                icon={<Circle className="h-6 w-6" />}
                 label="Gol" 
                 color="hover:bg-green-50 hover:border-green-300"
               />
               <EventButton 
                 type="yellow_card" 
-                icon="🟨" 
+                icon={<CreditCard className="h-6 w-6 text-yellow-500" />}
                 label="Cartão Amarelo" 
                 color="hover:bg-yellow-50 hover:border-yellow-300"
               />
               <EventButton 
                 type="red_card" 
-                icon="🟥" 
+                icon={<CreditCard className="h-6 w-6 text-red-500" />}
                 label="Cartão Vermelho" 
                 color="hover:bg-red-50 hover:border-red-300"
               />
               <EventButton 
                 type="substitution" 
-                icon="🔄" 
+                icon={<ArrowUpDown className="h-6 w-6" />}
                 label="Substituição" 
                 color="hover:bg-blue-50 hover:border-blue-300"
               />
