@@ -129,6 +129,28 @@ export const TeamDetail = () => {
     if (teamId) {
       fetchTeamData();
     }
+    
+    // Subscribe to real-time updates for players
+    const playersChannel = supabase
+      .channel(`team-players-${teamId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'players',
+          filter: `team_id=eq.${teamId}`
+        },
+        () => {
+          console.log('Players updated in real-time');
+          fetchTeamData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(playersChannel);
+    };
   }, [teamId]);
 
   const fetchTeamData = async () => {

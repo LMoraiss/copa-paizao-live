@@ -52,9 +52,9 @@ export const LiveMatch = () => {
     fetchMatch();
     fetchEvents();
     
-    // Subscribe to real-time updates
+    // Subscribe to real-time updates for ALL users (not just admins)
     const matchChannel = supabase
-      .channel('match-updates')
+      .channel(`match-${id}`)
       .on(
         'postgres_changes',
         {
@@ -63,7 +63,10 @@ export const LiveMatch = () => {
           table: 'matches',
           filter: `id=eq.${id}`
         },
-        () => fetchMatch()
+        (payload) => {
+          console.log('Match updated in real-time:', payload);
+          fetchMatch();
+        }
       )
       .on(
         'postgres_changes',
@@ -73,9 +76,16 @@ export const LiveMatch = () => {
           table: 'match_events',
           filter: `match_id=eq.${id}`
         },
-        () => fetchEvents()
+        (payload) => {
+          console.log('Match event updated in real-time:', payload);
+          fetchEvents();
+        }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('Real-time subscription active for match:', id);
+        }
+      });
 
     return () => {
       supabase.removeChannel(matchChannel);

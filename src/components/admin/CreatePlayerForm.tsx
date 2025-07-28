@@ -129,7 +129,10 @@ export const CreatePlayerForm = ({ player, onSuccess, onCancel }: CreatePlayerFo
           .update(playerData)
           .eq('id', player.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Player update error:', error);
+          throw error;
+        }
 
         toast({
           title: "Sucesso",

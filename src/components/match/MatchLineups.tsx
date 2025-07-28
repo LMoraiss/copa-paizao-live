@@ -164,53 +164,83 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
           </div>
         </div>
 
-        {/* Enhanced Players Positioning */}
-        <div className="absolute inset-0 p-6">
+          {/* Enhanced Players Positioning - Fixed spacing and distribution */}
+        <div className="absolute inset-0 p-4">
           {/* Goalkeepers */}
-          <div className={`absolute ${isHome ? 'bottom-8' : 'top-8'} left-1/2 transform -translate-x-1/2`}>
-            <div className="flex justify-center">
-              {goalkeepers.slice(0, 1).map(player => renderPlayerCard(player, isHome))}
+          {goalkeepers.length > 0 && (
+            <div className={`absolute ${isHome ? 'bottom-6' : 'top-6'} left-1/2 transform -translate-x-1/2`}>
+              <div className="flex justify-center space-x-4">
+                {goalkeepers.slice(0, 1).map(player => renderPlayerCard(player, isHome))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Defenders */}
-          <div className={`absolute ${isHome ? 'bottom-28' : 'top-28'} left-1/2 transform -translate-x-1/2`}>
-            <div className="flex justify-center space-x-8">
-              {defenders.slice(0, 4).map((player, index) => (
-                <div key={player.id} style={{ 
-                  transform: `translateX(${(index - 1.5) * 60}px)` 
-                }}>
-                  {renderPlayerCard(player, isHome)}
-                </div>
-              ))}
+          {defenders.length > 0 && (
+            <div className={`absolute ${isHome ? 'bottom-20' : 'top-20'} left-1/2 transform -translate-x-1/2`}>
+              <div className="flex justify-center items-center" style={{ width: '320px' }}>
+                {defenders.slice(0, 4).map((player, index) => (
+                  <div 
+                    key={player.id} 
+                    className="flex-shrink-0"
+                    style={{ 
+                      marginLeft: index > 0 ? '20px' : '0',
+                    }}
+                  >
+                    {renderPlayerCard(player, isHome)}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Midfielders */}
-          <div className={`absolute ${isHome ? 'bottom-52' : 'top-52'} left-1/2 transform -translate-x-1/2`}>
-            <div className="flex justify-center space-x-8">
-              {midfielders.slice(0, 4).map((player, index) => (
-                <div key={player.id} style={{ 
-                  transform: `translateX(${(index - 1.5) * 60}px)` 
-                }}>
-                  {renderPlayerCard(player, isHome)}
-                </div>
-              ))}
+          {midfielders.length > 0 && (
+            <div className={`absolute ${isHome ? 'bottom-40' : 'top-40'} left-1/2 transform -translate-x-1/2`}>
+              <div className="flex justify-center items-center" style={{ width: '280px' }}>
+                {midfielders.slice(0, 4).map((player, index) => (
+                  <div 
+                    key={player.id} 
+                    className="flex-shrink-0"
+                    style={{ 
+                      marginLeft: index > 0 ? '18px' : '0',
+                    }}
+                  >
+                    {renderPlayerCard(player, isHome)}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Forwards */}
-          <div className={`absolute ${isHome ? 'bottom-76' : 'top-76'} left-1/2 transform -translate-x-1/2`}>
-            <div className="flex justify-center space-x-12">
-              {forwards.slice(0, 3).map((player, index) => (
-                <div key={player.id} style={{ 
-                  transform: `translateX(${(index - 1) * 60}px)` 
-                }}>
-                  {renderPlayerCard(player, isHome)}
-                </div>
-              ))}
+          {forwards.length > 0 && (
+            <div className={`absolute ${isHome ? 'bottom-60' : 'top-60'} left-1/2 transform -translate-x-1/2`}>
+              <div className="flex justify-center items-center" style={{ width: '240px' }}>
+                {forwards.slice(0, 3).map((player, index) => (
+                  <div 
+                    key={player.id} 
+                    className="flex-shrink-0"
+                    style={{ 
+                      marginLeft: index > 0 ? '25px' : '0',
+                    }}
+                  >
+                    {renderPlayerCard(player, isHome)}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Show message if no players */}
+          {players.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-white text-center bg-black/50 backdrop-blur-sm rounded-lg p-4">
+                <User className="h-8 w-8 mx-auto mb-2" />
+                <p className="text-sm">Nenhum jogador cadastrado</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Enhanced Team Badge */}
