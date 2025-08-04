@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Play, Square, Clock, Target, AlertTriangle, RotateCcw, Pause, PlayCircle, Timer, Circle, CreditCard, ArrowUpDown, Undo2 } from 'lucide-react';
+import { MatchMediaUpload } from './MatchMediaUpload';
 
 interface Match {
   id: string;
@@ -43,6 +44,7 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
   const [matchPhase, setMatchPhase] = useState<'first_half' | 'halftime' | 'second_half'>('first_half');
   const [isMatchRunning, setIsMatchRunning] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
+  const [extraTime, setExtraTime] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -313,10 +315,21 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
     }
   };
 
-  const endHalf = () => {
+  const endHalf = async () => {
     if (matchPhase === 'first_half') {
+      // Add halftime event
+      await supabase
+        .from('match_events')
+        .insert({
+          match_id: match.id,
+          event_type: 'halftime',
+          minute: 45 + extraTime,
+          description: 'Fim do primeiro tempo'
+        });
+
       setMatchPhase('halftime');
       setIsMatchRunning(false);
+      setExtraTime(0); // Reset extra time
       if ((window as any).matchTimer) {
         clearInterval((window as any).matchTimer);
       }
@@ -325,6 +338,16 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
         description: "Intervalo iniciado.",
       });
     } else if (matchPhase === 'second_half') {
+      // Add fulltime event
+      await supabase
+        .from('match_events')
+        .insert({
+          match_id: match.id,
+          event_type: 'fulltime',
+          minute: 90 + extraTime,
+          description: 'Fim da partida'
+        });
+      
       endMatch();
     }
   };
@@ -342,7 +365,8 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
     if (matchPhase === 'halftime') return 'Intervalo';
     const half = matchPhase === 'first_half' ? '1º Tempo' : '2º Tempo';
     const displayMinute = matchPhase === 'second_half' ? currentMinute - 45 : currentMinute;
-    return `${half} - ${displayMinute}'`;
+    const extraDisplay = extraTime > 0 ? ` +${extraTime}` : '';
+    return `${half} - ${displayMinute}'${extraDisplay}`;
   };
 
   const getTeamPlayers = (teamId: string) => {
@@ -527,6 +551,42 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
               />
             </div>
           </div>
+        )}
+
+        {/* Extra Time Control */}
+        {match.status === 'live' && matchPhase !== 'halftime' && (
+          <div className="bg-muted/30 p-4 rounded-lg">
+            <h3 className="text-lg font-semibold mb-4">Tempo Extra</h3>
+            <div className="flex items-center space-x-4">
+              <div className="flex-1">
+                <Label htmlFor="extraTime">Minutos Extras</Label>
+                <Input
+                  id="extraTime"
+                  type="number"
+                  value={extraTime}
+                  onChange={(e) => setExtraTime(parseInt(e.target.value) || 0)}
+                  min="0"
+                  max="15"
+                  className="text-center"
+                />
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setExtraTime(0)}
+                size="sm"
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Media Upload */}
+        {match.status === 'live' && (
+          <MatchMediaUpload 
+            matchId={match.id} 
+            onMediaAdded={onUpdate}
+          />
         )}
 
         {/* Score Update */}

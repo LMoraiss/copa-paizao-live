@@ -27,10 +27,14 @@ export const LiveMatchTimer = ({ matchDate, status, className = "" }: LiveMatchT
         return;
       }
 
+      // Calculate match minutes (not total elapsed minutes)
       const totalMinutes = Math.floor(diff / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
-      setElapsed(`${totalMinutes}:${seconds.toString().padStart(2, '0')}`);
+      // Cap at 45 minutes for first half, reset for second half
+      const displayMinutes = totalMinutes > 45 ? totalMinutes - 45 : totalMinutes;
+      
+      setElapsed(`${displayMinutes}:${seconds.toString().padStart(2, '0')}`);
     };
 
     updateTimer();

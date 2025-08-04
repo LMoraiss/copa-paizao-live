@@ -63,9 +63,18 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
   };
 
   const getPlayersByPosition = (players: Player[], position: string) => {
-    return players.filter(player => 
-      player.position.toLowerCase().includes(position.toLowerCase())
-    );
+    return players.filter(player => {
+      const playerPos = player.position.toLowerCase();
+      const searchPos = position.toLowerCase();
+      
+      // Exact match for most positions
+      if (playerPos === searchPos) return true;
+      
+      // Special cases for similar positions
+      if (searchPos === 'zagueiro' && (playerPos === 'lateral' || playerPos === 'zagueiro')) return true;
+      
+      return playerPos.includes(searchPos);
+    });
   };
 
   const renderPlayerCard = (player: Player, isHome: boolean) => (
