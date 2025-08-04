@@ -94,9 +94,19 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
         const fileExtension = mediaFile.file.name.split('.').pop();
         const fileName = `match-${matchId}-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExtension}`;
         
-        // For now, we'll use a placeholder URL since we don't have storage setup
-        // In a real implementation, you would upload to Supabase Storage
-        const mediaUrl = URL.createObjectURL(mediaFile.file);
+        // Upload to Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('match-media')
+          .upload(fileName, mediaFile.file);
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('match-media')
+          .getPublicUrl(fileName);
+        
+        const mediaUrl = publicUrl;
         
         // Insert into match_media table
         const { error } = await supabase
