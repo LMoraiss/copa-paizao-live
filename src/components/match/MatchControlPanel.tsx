@@ -396,26 +396,91 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
             <span>Registrar {label}</span>
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <div>
-            <Label>Time</Label>
-            <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o time" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={match.home_team_id}>{match.home_team.name}</SelectItem>
-                <SelectItem value={match.away_team_id}>{match.away_team.name}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          {selectedTeam && (
+        
+        {type === 'substitution' ? (
+          <SubstitutionForm />
+        ) : (
+          <StandardEventForm type={type} />
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+
+  const StandardEventForm = ({ type }: { type: string }) => (
+    <div className="space-y-4">
+      <div>
+        <Label>Time</Label>
+        <Select value={selectedTeam} onValueChange={setSelectedTeam}>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione o time" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={match.home_team_id}>{match.home_team.name}</SelectItem>
+            <SelectItem value={match.away_team_id}>{match.away_team.name}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {selectedTeam && (
+        <div>
+          <Label>Jogador</Label>
+          <Select value={selectedPlayer} onValueChange={setSelectedPlayer}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o jogador" />
+            </SelectTrigger>
+            <SelectContent>
+              {getTeamPlayers(selectedTeam).map(player => (
+                <SelectItem key={player.id} value={player.id}>
+                  {player.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+      
+      <div className="flex items-center justify-between pt-4">
+        <span className="text-sm text-muted-foreground">
+          Minuto: {currentMinute}'
+        </span>
+        <Button 
+          onClick={() => addEvent(type)} 
+          disabled={loading || !selectedTeam || !selectedPlayer}
+          className="flex items-center space-x-2"
+        >
+          {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
+          <span>Confirmar</span>
+        </Button>
+      </div>
+    </div>
+  );
+
+  const SubstitutionForm = () => {
+    const [playerOut, setPlayerOut] = useState('');
+    const [playerIn, setPlayerIn] = useState('');
+
+    return (
+      <div className="space-y-4">
+        <div>
+          <Label>Time</Label>
+          <Select value={selectedTeam} onValueChange={setSelectedTeam}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o time" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={match.home_team_id}>{match.home_team.name}</SelectItem>
+              <SelectItem value={match.away_team_id}>{match.away_team.name}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {selectedTeam && (
+          <>
             <div>
-              <Label>Jogador</Label>
-              <Select value={selectedPlayer} onValueChange={setSelectedPlayer}>
+              <Label>Jogador que sai</Label>
+              <Select value={playerOut} onValueChange={setPlayerOut}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione o jogador" />
+                  <SelectValue placeholder="Jogador que deixa o campo" />
                 </SelectTrigger>
                 <SelectContent>
                   {getTeamPlayers(selectedTeam).map(player => (
@@ -426,25 +491,80 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
                 </SelectContent>
               </Select>
             </div>
-          )}
-          
-          <div className="flex items-center justify-between pt-4">
-            <span className="text-sm text-muted-foreground">
-              Minuto: {currentMinute}'
-            </span>
-            <Button 
-              onClick={() => addEvent(type)} 
-              disabled={loading || !selectedTeam || !selectedPlayer}
-              className="flex items-center space-x-2"
-            >
-              {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
-              <span>Confirmar</span>
-            </Button>
-          </div>
+            
+            <div>
+              <Label>Jogador que entra</Label>
+              <Select value={playerIn} onValueChange={setPlayerIn}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Jogador que entra em campo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getTeamPlayers(selectedTeam).filter(p => p.id !== playerOut).map(player => (
+                    <SelectItem key={player.id} value={player.id}>
+                      {player.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+        
+        <div className="flex items-center justify-between pt-4">
+          <span className="text-sm text-muted-foreground">
+            Minuto: {currentMinute}'
+          </span>
+          <Button 
+            onClick={() => addSubstitution(playerOut, playerIn)} 
+            disabled={loading || !selectedTeam || !playerOut || !playerIn}
+            className="flex items-center space-x-2"
+          >
+            {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
+            <span>Confirmar Substituição</span>
+          </Button>
         </div>
-      </DialogContent>
-    </Dialog>
-  );
+      </div>
+    );
+  };
+
+  const addSubstitution = async (playerOutId: string, playerInId: string) => {
+    setLoading(true);
+    try {
+      const playerOutName = players.find(p => p.id === playerOutId)?.name || '';
+      const playerInName = players.find(p => p.id === playerInId)?.name || '';
+      
+      const { error } = await supabase
+        .from('match_events')
+        .insert({
+          match_id: match.id,
+          event_type: 'substitution',
+          minute: currentMinute,
+          player_id: playerOutId,
+          description: `${playerOutName} → ${playerInName}`
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Substituição Registrada!",
+        description: `${playerOutName} foi substituído por ${playerInName}`,
+      });
+      
+      setIsEventDialogOpen(false);
+      setSelectedTeam('');
+      setSelectedPlayer('');
+      onUpdate();
+    } catch (error) {
+      console.error('Error adding substitution:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível registrar a substituição.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Card className="mb-6 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">

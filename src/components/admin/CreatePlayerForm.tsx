@@ -97,15 +97,18 @@ export const CreatePlayerForm = ({ player, onSuccess, onCancel }: CreatePlayerFo
 
     try {
       // Check if jersey number is already taken by another player in the same team
-      const { data: existingPlayer } = await supabase
+      const { data: existingPlayers, error: checkError } = await supabase
         .from('players')
         .select('id')
         .eq('team_id', teamId)
-        .eq('jersey_number', jerseyNum)
-        .neq('id', player?.id || '')
-        .single();
+        .eq('jersey_number', jerseyNum);
 
-      if (existingPlayer) {
+      if (checkError) throw checkError;
+
+      // Filter out current player if editing
+      const conflictingPlayers = existingPlayers?.filter(p => p.id !== player?.id) || [];
+      
+      if (conflictingPlayers.length > 0) {
         toast({
           title: "Erro",
           description: "Este número de camisa já está sendo usado por outro jogador neste time.",
