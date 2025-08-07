@@ -97,28 +97,35 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('match-media')
-          .upload(fileName, mediaFile.file);
+          .upload(fileName, mediaFile.file, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Storage upload error:', uploadError);
+          throw uploadError;
+        }
 
         // Get public URL
         const { data: { publicUrl } } = supabase.storage
           .from('match-media')
           .getPublicUrl(fileName);
         
-        const mediaUrl = publicUrl;
-        
         // Insert into match_media table
-        const { error } = await supabase
+        const { error: insertError } = await supabase
           .from('match_media')
           .insert({
             match_id: matchId,
             media_type: mediaFile.type,
-            media_url: mediaUrl,
+            media_url: publicUrl,
             caption: mediaFile.caption || null
           });
 
-        if (error) throw error;
+        if (insertError) {
+          console.error('Database insert error:', insertError);
+          throw insertError;
+        }
       }
 
       toast({
@@ -126,13 +133,15 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
         description: `${files.length} arquivo(s) enviado(s) com sucesso!`,
       });
 
+      // Clean up preview URLs
+      files.forEach(file => URL.revokeObjectURL(file.preview));
       setFiles([]);
       onMediaAdded();
     } catch (error) {
       console.error('Error uploading media:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível enviar os arquivos.",
+        description: `Falha no upload: ${error.message || 'Erro desconhecido'}`,
         variant: "destructive",
       });
     } finally {

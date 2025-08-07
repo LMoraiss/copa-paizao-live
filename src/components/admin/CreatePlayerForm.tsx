@@ -118,24 +118,24 @@ export const CreatePlayerForm = ({ player, onSuccess, onCancel }: CreatePlayerFo
         return;
       }
 
-      const playerData = {
-        name: name.trim(),
-        position,
-        jersey_number: jerseyNum,
-        team_id: teamId,
-        photo_url: photoUrl.trim() || null
-      };
+    const playerData = {
+      name: name.trim(),
+      position,
+      jersey_number: jerseyNum,
+      team_id: teamId,
+      photo_url: photoUrl.trim() || null
+    };
 
-      if (isEditing) {
-        const { error } = await supabase
-          .from('players')
-          .update(playerData)
-          .eq('id', player.id);
+    if (isEditing && player?.id) {
+      const { error } = await supabase
+        .from('players')
+        .update(playerData)
+        .eq('id', player.id);
 
-        if (error) {
-          console.error('Player update error:', error);
-          throw error;
-        }
+      if (error) {
+        console.error('Player update error:', error);
+        throw error;
+      }
 
         toast({
           title: "Sucesso",

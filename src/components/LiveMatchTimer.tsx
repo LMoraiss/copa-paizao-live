@@ -32,8 +32,9 @@ export const LiveMatchTimer = ({ matchDate, status, className = "" }: LiveMatchT
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
       
-      // Display format MM:SS
-      setElapsed(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+      // Display format MM:SS (limit to 90 minutes max for a soccer match)
+      const displayMinutes = Math.min(minutes, 90);
+      setElapsed(`${displayMinutes}:${seconds.toString().padStart(2, '0')}`);
     };
 
     updateTimer();
