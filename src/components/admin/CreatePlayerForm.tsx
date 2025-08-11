@@ -38,7 +38,15 @@ const positionOptions = [
 
 export const CreatePlayerForm = ({ player, onSuccess, onCancel }: CreatePlayerFormProps) => {
   const [name, setName] = useState(player?.name || '');
-  const [position, setPosition] = useState(player?.position || '');
+  const [position, setPosition] = useState(
+    player?.position
+      ? positionOptions.find(
+          (opt) =>
+            opt.value === player.position ||
+            opt.label.toLowerCase() === player.position.toLowerCase()
+        )?.value || player.position.toLowerCase()
+      : ''
+  );
   const [jerseyNumber, setJerseyNumber] = useState(player?.jersey_number?.toString() || '');
   const [teamId, setTeamId] = useState(player?.team_id || '');
   const [photoUrl, setPhotoUrl] = useState(player?.photo_url || '');

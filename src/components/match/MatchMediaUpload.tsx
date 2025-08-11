@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, Image, Video, X } from 'lucide-react';
-
+import imageCompression from 'browser-image-compression';
 interface MatchMediaUploadProps {
   matchId: string;
   onMediaAdded: () => void;
@@ -25,42 +25,65 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(event.target.files || []);
-    
-    selectedFiles.forEach(file => {
-      if (file.size > 50 * 1024 * 1024) { // 50MB limit
-        toast({
-          title: "Arquivo muito grande",
-          description: `${file.name} excede o limite de 50MB.`,
-          variant: "destructive",
-        });
-        return;
-      }
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const picked = Array.from(event.target.files || []);
 
-      const isImage = file.type.startsWith('image/');
-      const isVideo = file.type.startsWith('video/');
-      
+    const processed: MediaFile[] = [];
+
+    for (const original of picked) {
+      const isImage = original.type.startsWith('image/');
+      const isVideo = original.type.startsWith('video/');
+
       if (!isImage && !isVideo) {
         toast({
-          title: "Tipo de arquivo não suportado",
-          description: `${file.name} deve ser uma imagem ou vídeo.`,
-          variant: "destructive",
+          title: 'Tipo de arquivo não suportado',
+          description: `${original.name} deve ser uma imagem ou vídeo (.jpg, .jpeg, .png, .webp, .mp4, .mov, .avi, .webm).`,
+          variant: 'destructive',
         });
-        return;
+        continue;
       }
 
-      const preview = URL.createObjectURL(file);
-      
-      setFiles(prev => [...prev, {
-        file,
-        type: isImage ? 'image' : 'video',
-        preview,
-        caption: ''
-      }]);
-    });
-  };
+      try {
+        let fileToUse: File = original;
 
+        // Compress/resize large images client-side
+        if (isImage && original.size > 2 * 1024 * 1024) {
+          const compressedBlob = await imageCompression(original, {
+            maxSizeMB: 2,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            initialQuality: 0.8,
+          });
+          fileToUse = new File([compressedBlob], original.name, { type: compressedBlob.type || original.type });
+        }
+
+        // Allow larger videos (up to ~200MB)
+        if (isVideo && original.size > 200 * 1024 * 1024) {
+          toast({
+            title: 'Vídeo muito grande',
+            description: `${original.name} excede 200MB. Tente um arquivo menor.`,
+            variant: 'destructive',
+          });
+          continue;
+        }
+
+        const isImg = fileToUse.type.startsWith('image/');
+        const type: 'image' | 'video' = isImg ? 'image' : 'video';
+        const preview = URL.createObjectURL(fileToUse);
+
+        processed.push({ file: fileToUse, type, preview, caption: '' });
+      } catch (err: any) {
+        console.error('Erro processando arquivo', original.name, err);
+        toast({
+          title: 'Erro ao processar arquivo',
+          description: `${original.name} não pôde ser processado.`,
+          variant: 'destructive',
+        });
+      }
+    }
+
+    if (processed.length) setFiles((prev) => [...prev, ...processed]);
+  };
   const removeFile = (index: number) => {
     setFiles(prev => {
       const newFiles = [...prev];
