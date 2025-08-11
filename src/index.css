@@ -54,6 +54,13 @@ All colors MUST be HSL.
     --marista-gray: 210 15% 95%;
     --marista-dark-blue: 207 100% 27%;
     --marista-light-blue: 195 100% 47%;
+
+    /* Field design tokens */
+    --field-green-1: 142 72% 45%;
+    --field-green-2: 142 76% 36%;
+    --field-green-3: 142 72% 30%;
+    --field-green-4: 142 61% 24%;
+    --field-green-5: 142 61% 20%;
   }
 
   .dark {
@@ -98,6 +105,13 @@ All colors MUST be HSL.
     --marista-gray: 207 30% 12%;
     --marista-dark-blue: 195 100% 47%;
     --marista-light-blue: 195 80% 60%;
+
+    /* Field design tokens (dark) */
+    --field-green-1: 142 45% 35%;
+    --field-green-2: 142 50% 28%;
+    --field-green-3: 142 45% 24%;
+    --field-green-4: 142 40% 18%;
+    --field-green-5: 142 35% 14%;
   }
 }
 

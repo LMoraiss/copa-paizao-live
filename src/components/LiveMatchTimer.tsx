@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Clock } from 'lucide-react';
 
 interface LiveMatchTimerProps {
@@ -8,40 +8,34 @@ interface LiveMatchTimerProps {
 }
 
 export const LiveMatchTimer = ({ matchDate, status, className = "" }: LiveMatchTimerProps) => {
-  const [elapsed, setElapsed] = useState<string>('0:00');
+const [elapsed, setElapsed] = useState<string>('0:00');
+const startTimeRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    if (status !== 'live') {
-      setElapsed('0:00');
-      return;
-    }
+useEffect(() => {
+  if (status === 'live') {
+    // Reset and start from 0 at kickoff or when a new match goes live
+    startTimeRef.current = Date.now();
+    setElapsed('0:00');
 
-    const startTime = new Date(matchDate).getTime();
-    
     const updateTimer = () => {
-      const now = Date.now();
-      const diff = now - startTime;
-      
-      if (diff < 0) {
-        setElapsed('0:00');
-        return;
-      }
-
-      // Calculate actual elapsed seconds  
+      if (!startTimeRef.current) return;
+      const diff = Date.now() - startTimeRef.current;
       const totalSeconds = Math.floor(diff / 1000);
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
-      
-      // Display format MM:SS (limit to 90 minutes max for a soccer match)
-      const displayMinutes = Math.min(minutes, 90);
+      const displayMinutes = Math.min(minutes, 45); // each half up to 45:00
       setElapsed(`${displayMinutes}:${seconds.toString().padStart(2, '0')}`);
     };
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
-
     return () => clearInterval(interval);
-  }, [matchDate, status]);
+  } else {
+    // Reset when match is not live or when switching matches
+    startTimeRef.current = null;
+    setElapsed('0:00');
+  }
+}, [status, matchDate]);
 
   if (status !== 'live') {
     return null;

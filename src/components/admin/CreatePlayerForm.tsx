@@ -28,12 +28,12 @@ interface CreatePlayerFormProps {
   onCancel?: () => void;
 }
 
-const positions = [
-  'Goleiro',
-  'Zagueiro',
-  'Lateral',
-  'Meio-campo',
-  'Atacante'
+const positionOptions = [
+  { label: 'Goleiro', value: 'goleiro' },
+  { label: 'Zagueiro', value: 'zagueiro' },
+  { label: 'Lateral', value: 'lateral' },
+  { label: 'Meio-campo', value: 'meio-campo' },
+  { label: 'Atacante', value: 'atacante' }
 ];
 
 export const CreatePlayerForm = ({ player, onSuccess, onCancel }: CreatePlayerFormProps) => {
@@ -118,13 +118,15 @@ export const CreatePlayerForm = ({ player, onSuccess, onCancel }: CreatePlayerFo
         return;
       }
 
-    const playerData = {
-      name: name.trim(),
-      position,
-      jersey_number: jerseyNum,
-      team_id: teamId,
-      photo_url: photoUrl.trim() || null
-    };
+const normalizedPosition = positionOptions.find(opt => opt.value === position || opt.label.toLowerCase() === position.toLowerCase())?.value || position.toLowerCase();
+
+const playerData = {
+  name: name.trim(),
+  position: normalizedPosition,
+  jersey_number: jerseyNum,
+  team_id: teamId,
+  photo_url: photoUrl.trim() || null
+};
 
     if (isEditing && player?.id) {
       const { error } = await supabase
@@ -195,21 +197,21 @@ export const CreatePlayerForm = ({ player, onSuccess, onCancel }: CreatePlayerFo
             />
           </div>
 
-          <div>
-            <Label htmlFor="position">Posição</Label>
-            <Select value={position} onValueChange={setPosition} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a posição" />
-              </SelectTrigger>
-              <SelectContent>
-                {positions.map((pos) => (
-                  <SelectItem key={pos} value={pos}>
-                    {pos}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+<div>
+  <Label htmlFor="position">Posição</Label>
+  <Select value={position} onValueChange={setPosition} required>
+    <SelectTrigger>
+      <SelectValue placeholder="Selecione a posição" />
+    </SelectTrigger>
+    <SelectContent>
+      {positionOptions.map((opt) => (
+        <SelectItem key={opt.value} value={opt.value}>
+          {opt.label}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
 
           <div>
             <Label htmlFor="jerseyNumber">Número da Camisa</Label>

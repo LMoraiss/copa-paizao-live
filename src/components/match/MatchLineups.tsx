@@ -74,14 +74,23 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
     });
   };
 
-  const getPositionIcon = (position: string) => {
-    const pos = position.toLowerCase();
-    if (pos.includes('goleiro')) return <Crown className="h-4 w-4" />;
-    if (pos.includes('zagueiro') || pos.includes('lateral')) return <Shield className="h-4 w-4" />;
-    if (pos.includes('meio') || pos.includes('meia')) return <Target className="h-4 w-4" />;
-    if (pos.includes('atacante')) return <Zap className="h-4 w-4" />;
-    return <Users className="h-4 w-4" />;
-  };
+const getPositionIcon = (position: string) => {
+  const pos = position.toLowerCase();
+  if (pos.includes('goleiro')) return <Crown className="h-4 w-4" />;
+  if (pos.includes('zagueiro') || pos.includes('lateral')) return <Shield className="h-4 w-4" />;
+  if (pos.includes('meio') || pos.includes('meia')) return <Target className="h-4 w-4" />;
+  if (pos.includes('atacante')) return <Zap className="h-4 w-4" />;
+  return <Users className="h-4 w-4" />;
+};
+
+const getPositionAbbr = (position: string) => {
+  const pos = position.toLowerCase();
+  if (pos.includes('goleiro')) return 'GK';
+  if (pos.includes('zagueiro') || pos.includes('lateral')) return 'DF';
+  if (pos.includes('meio') || pos.includes('meia')) return 'MF';
+  if (pos.includes('atacante')) return 'FW';
+  return 'PL';
+};
 
   const renderPlayerCard = (player: Player, isHome: boolean) => (
     <Dialog key={player.id}>
@@ -94,15 +103,15 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
           {/* Player Card with enhanced 3D design */}
           <div className={`relative w-16 h-20 rounded-xl border-3 shadow-xl transition-all duration-300 group-hover:shadow-2xl overflow-hidden ${
             isHome 
-              ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 border-blue-200 text-white' 
-              : 'bg-gradient-to-br from-red-500 via-red-600 to-red-700 border-red-200 text-white'
+              ? 'bg-gradient-to-br from-primary/80 via-primary to-primary border-primary/20 text-primary-foreground' 
+              : 'bg-gradient-to-br from-destructive/80 via-destructive to-destructive border-destructive/20 text-destructive-foreground'
           }`}>
             {/* Jersey number with glowing effect */}
             <div className="absolute top-1 left-1/2 transform -translate-x-1/2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shadow-lg ${
                 isHome 
-                  ? 'bg-white text-blue-700 ring-2 ring-blue-300' 
-                  : 'bg-white text-red-700 ring-2 ring-red-300'
+                  ? 'bg-card text-primary ring-2 ring-primary/30' 
+                  : 'bg-card text-destructive ring-2 ring-destructive/30'
               }`}>
                 {player.jersey_number}
               </div>
@@ -120,11 +129,11 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
               </div>
             </div>
 
-            {/* Position indicator */}
+            {/* Position indicator (abbr) */}
             <div className="absolute top-1 right-1">
-              <div className="text-white/80 text-xs">
-                {getPositionIcon(player.position)}
-              </div>
+              <span className="text-[10px] font-bold bg-black/30 text-white px-1.5 py-0.5 rounded">
+                {getPositionAbbr(player.position)}
+              </span>
             </div>
 
             {/* Glossy overlay effect */}
@@ -142,7 +151,7 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
         <div className="space-y-4 p-4">
           <div className="flex items-center space-x-4">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold shadow-lg ${
-              isHome ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white' : 'bg-gradient-to-br from-red-600 to-red-700 text-white'
+              isHome ? 'bg-gradient-to-br from-primary to-primary text-primary-foreground' : 'bg-gradient-to-br from-destructive to-destructive text-destructive-foreground'
             }`}>
               {player.jersey_number}
             </div>
@@ -171,12 +180,12 @@ export const MatchLineups = ({ homeTeamId, awayTeamId, homeTeamName, awayTeamNam
         <div className="absolute inset-0 rounded-2xl border-4 border-white shadow-2xl overflow-hidden"
              style={{
                background: `
-                 linear-gradient(135deg, 
-                   #22c55e 0%, 
-                   #16a34a 25%, 
-                   #15803d 50%, 
-                   #166534 75%, 
-                   #14532d 100%
+                 linear-gradient(135deg,
+                   hsl(var(--field-green-1)) 0%,
+                   hsl(var(--field-green-2)) 25%,
+                   hsl(var(--field-green-3)) 50%,
+                   hsl(var(--field-green-4)) 75%,
+                   hsl(var(--field-green-5)) 100%
                  )
                `
              }}>
