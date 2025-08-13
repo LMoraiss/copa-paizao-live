@@ -120,9 +120,10 @@ export const Matches = () => {
             </CardContent>
           </Card>
         ) : (
-          matches.map((match) => (
+          matches.map((match, index) => (
             <Link key={match.id} to={`/match/${match.id}`}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <Card className="hover-lift glass cursor-pointer border-2 hover:border-primary/20 animate-fade-in-up group" 
+                    style={{ animationDelay: `${index * 0.1}s` }}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
@@ -149,35 +150,70 @@ export const Matches = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center justify-center space-x-3">
+                  <div className="flex-1 flex items-center justify-center space-x-4">
                     {match.home_team.logo_url && (
-                      <img 
-                        src={match.home_team.logo_url} 
-                        alt={match.home_team.name}
-                        className="w-8 h-8 object-contain"
-                      />
+                      <div className="relative">
+                        <img 
+                          src={match.home_team.logo_url} 
+                          alt={match.home_team.name}
+                          className="w-12 h-12 object-contain rounded-full shadow-md group-hover:scale-110 transition-transform duration-300"
+                        />
+                        {match.status === 'live' && (
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        )}
+                      </div>
                     )}
-                    <h3 className="font-semibold text-lg">{match.home_team.name}</h3>
+                    <div className="text-center">
+                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
+                        {match.home_team.name}
+                      </h3>
+                      <div className="text-xs text-muted-foreground">Mandante</div>
+                    </div>
                   </div>
                   
                   <div className="flex-shrink-0 mx-8 text-center">
                     {(match.status === 'finished' || match.status === 'live') && match.home_score !== null && match.away_score !== null ? (
-                      <div className="text-2xl font-bold">
-                        {match.home_score} - {match.away_score}
+                      <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-4 shadow-lg">
+                        <div className="text-3xl font-bold text-primary">
+                          {match.home_score} <span className="text-muted-foreground mx-2">x</span> {match.away_score}
+                        </div>
+                        {match.status === 'live' && (
+                          <div className="text-xs text-red-500 font-medium animate-pulse mt-1">
+                            🔴 AO VIVO
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <div className="text-xl font-semibold text-muted-foreground">VS</div>
+                      <div className="bg-gradient-to-r from-muted/30 to-muted/10 rounded-xl p-4 shadow-md">
+                        <div className="text-2xl font-bold text-muted-foreground">VS</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {new Date(match.match_date).toLocaleTimeString('pt-BR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                      </div>
                     )}
                   </div>
                   
-                  <div className="flex-1 flex items-center justify-center space-x-3">
-                    <h3 className="font-semibold text-lg">{match.away_team.name}</h3>
+                  <div className="flex-1 flex items-center justify-center space-x-4">
+                    <div className="text-center">
+                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
+                        {match.away_team.name}
+                      </h3>
+                      <div className="text-xs text-muted-foreground">Visitante</div>
+                    </div>
                     {match.away_team.logo_url && (
-                      <img 
-                        src={match.away_team.logo_url} 
-                        alt={match.away_team.name}
-                        className="w-8 h-8 object-contain"
-                      />
+                      <div className="relative">
+                        <img 
+                          src={match.away_team.logo_url} 
+                          alt={match.away_team.name}
+                          className="w-12 h-12 object-contain rounded-full shadow-md group-hover:scale-110 transition-transform duration-300"
+                        />
+                        {match.status === 'live' && (
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

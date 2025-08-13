@@ -59,28 +59,41 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative bg-primary">
-      {/* Background overlay for better readability */}
+    <div className="min-h-screen flex items-center justify-center px-4 relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 overflow-hidden">
+      {/* Enhanced background with animated elements */}
       <div className="absolute inset-0 bg-black/20"></div>
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute bottom-32 right-16 w-24 h-24 bg-white/5 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/3 w-16 h-16 bg-white/5 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+      </div>
       
-      <div className="w-full max-w-md relative z-10">
+      <div className="w-full max-w-md relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <img 
-              src="/lovable-uploads/f126e355-793b-4a3e-94d1-87de200dafb7.png" 
-              alt="Marista Logo" 
-              className="h-16 w-16 object-contain"
-            />
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-white/20 rounded-full blur-xl animate-pulse"></div>
+              <img 
+                src="/lovable-uploads/f126e355-793b-4a3e-94d1-87de200dafb7.png" 
+                alt="Marista Logo" 
+                className="h-20 w-20 object-contain relative z-10 animate-bounce-subtle"
+              />
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Copa Paizão</h1>
-          <p className="text-white/80">Sistema de Gerenciamento de Torneio</p>
+          <h1 className="text-4xl font-bold text-white mb-3 animate-slide-down">Copa Paizão</h1>
+          <p className="text-white/90 text-lg animate-slide-down" style={{animationDelay: '0.2s'}}>
+            Sistema de Gerenciamento de Torneio
+          </p>
         </div>
 
-        <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl text-center text-marista-dark-blue">
-              Bem-vindo!
+        <Card className="shadow-2xl border-0 glass hover-glow animate-scale-in overflow-hidden">
+          <CardHeader className="space-y-2 pb-6 bg-gradient-to-r from-white/50 to-white/30">
+            <CardTitle className="text-3xl text-center text-marista-dark-blue font-bold animate-slide-down">
+              Bem-vindo! ⚽
             </CardTitle>
+            <p className="text-center text-muted-foreground animate-slide-down" style={{animationDelay: '0.1s'}}>
+              Entre ou cadastre-se para continuar
+            </p>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

@@ -102,16 +102,19 @@ export const TopScorers = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Artilheiros</h1>
-        <p className="text-muted-foreground">Os maiores goleadores da Copa Paizão</p>
+      <div className="mb-8 text-center animate-fade-in-up">
+        <h1 className="text-4xl font-bold text-foreground mb-3">🏆 Artilheiros</h1>
+        <p className="text-muted-foreground text-lg">Os maiores goleadores da Copa Paizão</p>
+        <div className="w-24 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto mt-4 rounded-full"></div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Target className="h-5 w-5" />
-            <span>Ranking de Artilheiros</span>
+      <Card className="hover-lift glass animate-scale-in">
+        <CardHeader className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10">
+          <CardTitle className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+              <Target className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-xl font-bold">🎯 Ranking de Artilheiros</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
