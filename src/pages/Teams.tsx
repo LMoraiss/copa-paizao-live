@@ -110,10 +110,9 @@ export const Teams = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {teams.map((team) => (
-            <Card key={team.id} className="group hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 border-0 bg-gradient-to-br from-card via-card to-muted/20 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <CardHeader className="text-center relative z-10">
-                <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
+            <Card key={team.id} className="group bg-card border border-border rounded-lg hover:shadow-md transition-all duration-200">
+              <CardHeader className="text-center">
+                <div className="mx-auto mb-4 w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
                   {team.logo_url ? (
                     <img 
                       src={team.logo_url} 
@@ -124,18 +123,15 @@ export const Teams = () => {
                     <Trophy className="h-10 w-10 text-primary" />
                   )}
                 </div>
-                <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors duration-300">{team.name}</CardTitle>
-                <Badge 
-                  variant="secondary" 
-                  className="bg-primary/10 text-primary border-primary/20 font-semibold px-3 py-1"
-                >
+                <CardTitle className="text-lg font-semibold">{team.name}</CardTitle>
+                <Badge variant="secondary" className="text-xs">
                   <Users className="h-3 w-3 mr-1" />
                   {team.players?.[0]?.count || 0} jogadores
                 </Badge>
               </CardHeader>
-              <CardContent className="text-center space-y-3 relative z-10">
+              <CardContent className="text-center">
                 <Link to={`/teams/${team.id}`}>
-                  <Button className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg hover:shadow-xl transition-all duration-300 font-semibold">
+                  <Button className="w-full">
                     <Trophy className="h-4 w-4 mr-2" />
                     Ver Time
                   </Button>
@@ -144,7 +140,7 @@ export const Teams = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="w-full border-primary/30 text-primary hover:bg-primary/5 hover:border-primary/50 transition-all duration-300"
+                    className="w-full mt-2"
                     onClick={() => setEditingTeam(team)}
                   >
                     <Edit className="h-4 w-4 mr-2" />

@@ -135,14 +135,16 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
           .from('match-media')
           .getPublicUrl(fileName);
         
-        // Insert into match_media table
+        // Insert into match_media table with proper UUID
         const { error: insertError } = await supabase
           .from('match_media')
           .insert({
+            id: crypto.randomUUID(),
             match_id: matchId,
             media_type: mediaFile.type,
             media_url: publicUrl,
-            caption: mediaFile.caption || null
+            caption: mediaFile.caption || null,
+            created_at: new Date().toISOString()
           });
 
         if (insertError) {
@@ -192,7 +194,7 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
             className="cursor-pointer"
           />
           <p className="text-xs text-muted-foreground mt-1">
-            Imagens e vídeos até 50MB cada
+            Imagens até 2MB e vídeos até 200MB cada
           </p>
         </div>
 
