@@ -44,16 +44,6 @@ const SoccerField = ({ players }: { players: Player[] }) => {
 
   const PlayerCard = ({ player, x, y }: { player: Player; x: number; y: number }) => (
     <g className="group cursor-pointer">
-      {/* Player card background with gradient */}
-      <defs>
-        <radialGradient id={`gradient-${player.id}`} cx="50%" cy="30%" r="70%">
-          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="1" />
-        </radialGradient>
-        <filter id={`shadow-${player.id}`}>
-          <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="rgba(0,0,0,0.3)" />
-        </filter>
-      </defs>
       
       {/* Player card */}
       <rect
@@ -137,6 +127,19 @@ const SoccerField = ({ players }: { players: Player[] }) => {
             <filter id="fieldShadow">
               <feDropShadow dx="0" dy="8" stdDeviation="4" floodColor="rgba(0,0,0,0.2)" />
             </filter>
+
+            {/* Player gradients and shadows - defined once for all players */}
+            {players.map((player) => (
+              <g key={`defs-${player.id}`}>
+                <radialGradient id={`gradient-${player.id}`} cx="50%" cy="30%" r="70%">
+                  <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="1" />
+                </radialGradient>
+                <filter id={`shadow-${player.id}`}>
+                  <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="rgba(0,0,0,0.3)" />
+                </filter>
+              </g>
+            ))}
           </defs>
           
           {/* Field background with pattern */}
