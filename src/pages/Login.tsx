@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Mail, Lock, AlertCircle, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const Login = () => {
@@ -58,6 +59,30 @@ export const Login = () => {
     setLoading(false);
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        setError('Erro ao enviar email de recuperação');
+      } else {
+        setError('');
+        setActiveTab('login');
+        alert('Instruções de recuperação enviadas para seu email!');
+      }
+    } catch (error) {
+      setError('Erro inesperado. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 overflow-hidden">
       {/* Enhanced background with animated elements */}
@@ -72,24 +97,22 @@ export const Login = () => {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-white/20 rounded-full blur-xl animate-pulse"></div>
+              <div className="absolute inset-0 bg-white/30 rounded-full blur-lg"></div>
+              <div className="absolute inset-0 bg-white/20 rounded-full blur-xl"></div>
               <img 
                 src="/lovable-uploads/f126e355-793b-4a3e-94d1-87de200dafb7.png" 
                 alt="Marista Logo" 
-                className="h-20 w-20 object-contain relative z-10 animate-bounce-subtle"
+                className="h-24 w-24 object-contain relative z-10 drop-shadow-lg filter contrast-125 brightness-110"
               />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-3 animate-slide-down">Copa Paizão</h1>
-          <p className="text-white/90 text-lg animate-slide-down" style={{animationDelay: '0.2s'}}>
-            Sistema de Gerenciamento de Torneio
-          </p>
+          <h1 className="text-4xl font-bold text-white mb-6">Copa Paizão</h1>
         </div>
 
         <Card className="shadow-2xl border-0 glass hover-glow animate-scale-in overflow-hidden">
           <CardHeader className="space-y-2 pb-6 bg-gradient-to-r from-white/50 to-white/30">
-            <CardTitle className="text-3xl text-center text-marista-dark-blue font-bold animate-slide-down">
-              Bem-vindo! ⚽
+            <CardTitle className="text-3xl text-center text-marista-dark-blue font-bold">
+              Bem-vindo!
             </CardTitle>
             <p className="text-center text-muted-foreground animate-slide-down" style={{animationDelay: '0.1s'}}>
               Entre ou cadastre-se para continuar
@@ -97,9 +120,10 @@ export const Login = () => {
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
                 <TabsTrigger value="login">Entrar</TabsTrigger>
                 <TabsTrigger value="signup">Cadastrar</TabsTrigger>
+                <TabsTrigger value="forgot-password">Recuperar</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login" className="space-y-4 mt-0">
@@ -140,6 +164,16 @@ export const Login = () => {
                         disabled={loading}
                       />
                     </div>
+                  </div>
+
+                  <div className="text-right">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('forgot-password')}
+                      className="text-sm text-marista-dark-blue hover:text-marista-dark-blue/80 transition-colors"
+                    >
+                      Esqueceu a senha?
+                    </button>
                   </div>
 
                   {error && (
@@ -232,6 +266,44 @@ export const Login = () => {
                     disabled={loading}
                   >
                     {loading ? "Criando conta..." : "Criar conta"}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="forgot-password" className="space-y-4 mt-0">
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="forgot-email" className="text-sm font-medium">
+                      Email
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="forgot-email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="pl-10"
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-marista-light-blue hover:bg-marista-light-blue/90"
+                    disabled={loading}
+                  >
+                    {loading ? "Enviando..." : "Enviar instruções"}
                   </Button>
                 </form>
               </TabsContent>

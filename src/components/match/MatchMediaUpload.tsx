@@ -15,7 +15,7 @@ interface MatchMediaUploadProps {
 
 interface MediaFile {
   file: File;
-  type: 'image' | 'video';
+  type: 'photo' | 'video';
   preview: string;
   caption: string;
 }
@@ -68,7 +68,7 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
         }
 
         const isImg = fileToUse.type.startsWith('image/');
-        const type: 'image' | 'video' = isImg ? 'image' : 'video';
+        const type: 'photo' | 'video' = isImg ? 'photo' : 'video';
         const preview = URL.createObjectURL(fileToUse);
 
         processed.push({ file: fileToUse, type, preview, caption: '' });
@@ -135,16 +135,14 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
           .from('match-media')
           .getPublicUrl(fileName);
         
-        // Insert into match_media table with proper UUID
+        // Insert into match_media table with proper UUID and correct media_type
         const { error: insertError } = await supabase
           .from('match_media')
           .insert({
-            id: crypto.randomUUID(),
             match_id: matchId,
-            media_type: mediaFile.type,
+            media_type: mediaFile.type, // Now correctly using 'photo' or 'video'
             media_url: publicUrl,
-            caption: mediaFile.caption || null,
-            created_at: new Date().toISOString()
+            caption: mediaFile.caption || null
           });
 
         if (insertError) {
@@ -203,8 +201,8 @@ export const MatchMediaUpload = ({ matchId, onMediaAdded }: MatchMediaUploadProp
             <h4 className="font-medium">Arquivos Selecionados</h4>
             {files.map((file, index) => (
               <div key={index} className="flex items-start space-x-4 p-3 border rounded-lg">
-                <div className="flex-shrink-0">
-                  {file.type === 'image' ? (
+                 <div className="flex-shrink-0">
+                   {file.type === 'photo' ? (
                     <img 
                       src={file.preview} 
                       alt="Preview" 
