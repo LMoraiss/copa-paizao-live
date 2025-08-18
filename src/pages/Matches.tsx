@@ -102,10 +102,10 @@ export const Matches = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Partidas</h1>
-        <p className="text-muted-foreground">Acompanhe todas as partidas da Copa Paizão</p>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Partidas</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Acompanhe todas as partidas da Copa Paizão</p>
       </div>
 
       <div className="space-y-4">
@@ -122,26 +122,31 @@ export const Matches = () => {
         ) : (
           matches.map((match, index) => (
             <Link key={match.id} to={`/match/${match.id}`}>
-              <Card className="hover-lift glass cursor-pointer border-2 hover:border-primary/20 animate-fade-in-up group" 
+              <Card className="hover-lift glass cursor-pointer border-2 hover:border-primary/20 animate-fade-in-up group touch-manipulation" 
                     style={{ animationDelay: `${index * 0.1}s` }}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(match.match_date).toLocaleDateString('pt-BR')}
-                    </span>
-                    <Clock className="h-4 w-4 text-muted-foreground ml-4" />
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(match.match_date).toLocaleTimeString('pt-BR', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </span>
+              <CardContent className="p-3 sm:p-6">
+                {/* Mobile-first: Stack info vertically */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 space-y-2 sm:space-y-0">
+                  <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">
+                        {new Date(match.match_date).toLocaleDateString('pt-BR')}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">
+                        {new Date(match.match_date).toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
                     <LiveMatchTimer 
                       matchDate={match.match_date} 
                       status={match.status}
-                      className="ml-4 text-primary"
+                      className="text-primary text-xs sm:text-sm"
                     />
                   </div>
                   <div className="flex items-center space-x-2">
@@ -149,33 +154,36 @@ export const Matches = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center justify-center space-x-4">
+                {/* Teams and Score - Mobile optimized layout */}
+                <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+                  {/* Home team - left aligned on mobile */}
+                  <div className="flex items-center space-x-2 sm:space-x-4 flex-1 sm:justify-center">
                     {match.home_team.logo_url && (
-                      <div className="relative">
+                      <div className="relative flex-shrink-0">
                         <img 
                           src={match.home_team.logo_url} 
                           alt={match.home_team.name}
-                          className="w-12 h-12 object-contain rounded-full shadow-md group-hover:scale-110 transition-transform duration-300"
+                          className="w-8 h-8 sm:w-12 sm:h-12 object-contain rounded-full shadow-md group-hover:scale-110 transition-transform duration-300"
                         />
                         {match.status === 'live' && (
-                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                          <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse"></div>
                         )}
                       </div>
                     )}
-                    <div className="text-center">
-                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
+                    <div className="text-left sm:text-center">
+                      <h3 className="font-bold text-sm sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
                         {match.home_team.name}
                       </h3>
                       <div className="text-xs text-muted-foreground">Mandante</div>
                     </div>
                   </div>
                   
-                  <div className="flex-shrink-0 mx-8 text-center">
+                  {/* Score section - centered */}
+                  <div className="flex-shrink-0 mx-0 sm:mx-8 text-center order-first sm:order-none">
                     {(match.status === 'finished' || match.status === 'live') && match.home_score !== null && match.away_score !== null ? (
-                      <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-4 shadow-lg">
-                        <div className="text-3xl font-bold text-primary">
-                          {match.home_score} <span className="text-muted-foreground mx-2">x</span> {match.away_score}
+                      <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-2 sm:p-4 shadow-lg">
+                        <div className="text-xl sm:text-3xl font-bold text-primary">
+                          {match.home_score} <span className="text-muted-foreground mx-1 sm:mx-2">x</span> {match.away_score}
                         </div>
                         {match.status === 'live' && (
                           <div className="text-xs text-red-500 font-medium animate-pulse mt-1">
@@ -184,8 +192,8 @@ export const Matches = () => {
                         )}
                       </div>
                     ) : (
-                      <div className="bg-gradient-to-r from-muted/30 to-muted/10 rounded-xl p-4 shadow-md">
-                        <div className="text-2xl font-bold text-muted-foreground">VS</div>
+                      <div className="bg-gradient-to-r from-muted/30 to-muted/10 rounded-xl p-2 sm:p-4 shadow-md">
+                        <div className="text-lg sm:text-2xl font-bold text-muted-foreground">VS</div>
                         <div className="text-xs text-muted-foreground mt-1">
                           {new Date(match.match_date).toLocaleTimeString('pt-BR', {
                             hour: '2-digit',
@@ -196,22 +204,23 @@ export const Matches = () => {
                     )}
                   </div>
                   
-                  <div className="flex-1 flex items-center justify-center space-x-4">
-                    <div className="text-center">
-                      <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
+                  {/* Away team - right aligned on mobile */}
+                  <div className="flex items-center space-x-2 sm:space-x-4 flex-1 justify-end sm:justify-center">
+                    <div className="text-right sm:text-center">
+                      <h3 className="font-bold text-sm sm:text-lg text-foreground group-hover:text-primary transition-colors truncate">
                         {match.away_team.name}
                       </h3>
                       <div className="text-xs text-muted-foreground">Visitante</div>
                     </div>
                     {match.away_team.logo_url && (
-                      <div className="relative">
+                      <div className="relative flex-shrink-0">
                         <img 
                           src={match.away_team.logo_url} 
                           alt={match.away_team.name}
-                          className="w-12 h-12 object-contain rounded-full shadow-md group-hover:scale-110 transition-transform duration-300"
+                          className="w-8 h-8 sm:w-12 sm:h-12 object-contain rounded-full shadow-md group-hover:scale-110 transition-transform duration-300"
                         />
                         {match.status === 'live' && (
-                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                          <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-pulse"></div>
                         )}
                       </div>
                     )}
@@ -219,8 +228,8 @@ export const Matches = () => {
                 </div>
 
                 {match.location && (
-                  <div className="flex items-center justify-center mt-4 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4 mr-1" />
+                  <div className="flex items-center justify-center mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
+                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                     {match.location}
                   </div>
                 )}

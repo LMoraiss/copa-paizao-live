@@ -382,11 +382,11 @@ export const MatchControlPanel = ({ match, onUpdate }: MatchControlPanelProps) =
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className={`flex-1 h-20 flex flex-col items-center space-y-2 ${color} transition-all hover:scale-105`}
+          className={`flex-1 h-16 sm:h-20 flex flex-col items-center space-y-1 sm:space-y-2 ${color} transition-all hover:scale-105 touch-manipulation`}
           disabled={match.status !== 'live'}
         >
-          <div className="text-2xl">{icon}</div>
-          <span className="text-sm font-medium">{label}</span>
+          <div className="text-lg sm:text-2xl">{icon}</div>
+          <span className="text-xs sm:text-sm font-medium">{label}</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

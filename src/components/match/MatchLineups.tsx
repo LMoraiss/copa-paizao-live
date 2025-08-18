@@ -96,42 +96,42 @@ const getPositionAbbr = (position: string) => {
     <Dialog key={player.id}>
       <DialogTrigger asChild>
         <div
-          className={`relative group cursor-pointer transition-all duration-300 hover:scale-110 hover:z-10 ${
+          className={`relative group cursor-pointer transition-all duration-300 hover:scale-105 sm:hover:scale-110 hover:z-10 touch-manipulation ${
             isHome ? 'hover:drop-shadow-2xl' : 'hover:drop-shadow-2xl'
           }`}
         >
-          {/* Player Card with enhanced 3D design */}
-          <div className={`relative w-16 h-20 rounded-xl border-3 shadow-xl transition-all duration-300 group-hover:shadow-2xl overflow-hidden ${
+          {/* Player Card with enhanced 3D design - Mobile optimized */}
+          <div className={`relative w-12 h-16 sm:w-16 sm:h-20 rounded-lg sm:rounded-xl border-2 sm:border-3 shadow-lg sm:shadow-xl transition-all duration-300 group-hover:shadow-2xl overflow-hidden ${
             isHome 
               ? 'bg-gradient-to-br from-primary/80 via-primary to-primary border-primary/20 text-primary-foreground' 
               : 'bg-gradient-to-br from-destructive/80 via-destructive to-destructive border-destructive/20 text-destructive-foreground'
           }`}>
-            {/* Jersey number with glowing effect */}
-            <div className="absolute top-1 left-1/2 transform -translate-x-1/2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shadow-lg ${
+            {/* Jersey number with glowing effect - Mobile optimized */}
+            <div className="absolute top-0.5 sm:top-1 left-1/2 transform -translate-x-1/2">
+              <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-black shadow-lg ${
                 isHome 
-                  ? 'bg-card text-primary ring-2 ring-primary/30' 
-                  : 'bg-card text-destructive ring-2 ring-destructive/30'
+                  ? 'bg-card text-primary ring-1 sm:ring-2 ring-primary/30' 
+                  : 'bg-card text-destructive ring-1 sm:ring-2 ring-destructive/30'
               }`}>
                 {player.jersey_number}
               </div>
             </div>
             
-            {/* Player name */}
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-full px-1">
+            {/* Player name - Mobile optimized */}
+            <div className="absolute bottom-1 sm:bottom-2 left-1/2 transform -translate-x-1/2 w-full px-0.5 sm:px-1">
               <div className="text-center">
-                <div className="text-[9px] font-bold leading-tight text-white drop-shadow-lg">
-                  {player.name.split(' ')[0]}
+                <div className="text-[7px] sm:text-[9px] font-bold leading-tight text-white drop-shadow-lg">
+                  {player.name.split(' ')[0].slice(0, 6)}
                 </div>
-                <div className="text-[8px] opacity-90 leading-tight">
+                <div className="text-[6px] sm:text-[8px] opacity-90 leading-tight hidden sm:block">
                   {player.name.split(' ')[1]?.slice(0, 3)}
                 </div>
               </div>
             </div>
 
-            {/* Position indicator (abbr) */}
-            <div className="absolute top-1 right-1">
-              <span className="text-[10px] font-bold bg-black/30 text-white px-1.5 py-0.5 rounded">
+            {/* Position indicator (abbr) - Mobile optimized */}
+            <div className="absolute top-0.5 sm:top-1 right-0.5 sm:right-1">
+              <span className="text-[8px] sm:text-[10px] font-bold bg-black/30 text-white px-1 sm:px-1.5 py-0.5 rounded">
                 {getPositionAbbr(player.position)}
               </span>
             </div>
@@ -175,7 +175,7 @@ const getPositionAbbr = (position: string) => {
     const forwards = getPlayersByPosition(players, 'atacante').slice(0, 3);
 
     return (
-      <div className="relative h-[600px] w-full overflow-hidden">
+      <div className="relative h-[400px] sm:h-[600px] w-full overflow-hidden">
         {/* Stunning 3D Soccer Field */}
         <div className="absolute inset-0 rounded-2xl border-4 border-white shadow-2xl overflow-hidden"
              style={{
@@ -240,11 +240,11 @@ const getPositionAbbr = (position: string) => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/5 pointer-events-none"></div>
         </div>
 
-        {/* Smart Player Positioning System */}
-        <div className="absolute inset-0 p-8 z-20">
+        {/* Smart Player Positioning System - Mobile optimized */}
+        <div className="absolute inset-0 p-4 sm:p-8 z-20">
           {/* Goalkeepers */}
           {goalkeepers.length > 0 && (
-            <div className={`absolute ${isHome ? 'bottom-8' : 'top-8'} left-1/2 transform -translate-x-1/2`}>
+            <div className={`absolute ${isHome ? 'bottom-4 sm:bottom-8' : 'top-4 sm:top-8'} left-1/2 transform -translate-x-1/2`}>
               <div className="flex justify-center">
                 {goalkeepers.map(player => renderPlayerCard(player, isHome))}
               </div>
@@ -253,8 +253,8 @@ const getPositionAbbr = (position: string) => {
 
           {/* Defenders */}
           {defenders.length > 0 && (
-            <div className={`absolute ${isHome ? 'bottom-24' : 'top-24'} left-1/2 transform -translate-x-1/2`}>
-              <div className="flex justify-center items-center space-x-6" style={{ width: '350px' }}>
+            <div className={`absolute ${isHome ? 'bottom-16 sm:bottom-24' : 'top-16 sm:top-24'} left-1/2 transform -translate-x-1/2`}>
+              <div className="flex justify-center items-center space-x-3 sm:space-x-6 max-w-[280px] sm:max-w-[350px]">
                 {defenders.map((player, index) => (
                   <div key={player.id} className="flex-shrink-0">
                     {renderPlayerCard(player, isHome)}
@@ -266,8 +266,8 @@ const getPositionAbbr = (position: string) => {
 
           {/* Midfielders */}
           {midfielders.length > 0 && (
-            <div className={`absolute ${isHome ? 'bottom-48' : 'top-48'} left-1/2 transform -translate-x-1/2`}>
-              <div className="flex justify-center items-center space-x-5" style={{ width: '300px' }}>
+            <div className={`absolute ${isHome ? 'bottom-32 sm:bottom-48' : 'top-32 sm:top-48'} left-1/2 transform -translate-x-1/2`}>
+              <div className="flex justify-center items-center space-x-2 sm:space-x-5 max-w-[240px] sm:max-w-[300px]">
                 {midfielders.map((player, index) => (
                   <div key={player.id} className="flex-shrink-0">
                     {renderPlayerCard(player, isHome)}
@@ -279,8 +279,8 @@ const getPositionAbbr = (position: string) => {
 
           {/* Forwards */}
           {forwards.length > 0 && (
-            <div className={`absolute ${isHome ? 'bottom-72' : 'top-72'} left-1/2 transform -translate-x-1/2`}>
-              <div className="flex justify-center items-center space-x-8" style={{ width: '250px' }}>
+            <div className={`absolute ${isHome ? 'bottom-48 sm:bottom-72' : 'top-48 sm:top-72'} left-1/2 transform -translate-x-1/2`}>
+              <div className="flex justify-center items-center space-x-4 sm:space-x-8 max-w-[200px] sm:max-w-[250px]">
                 {forwards.map((player, index) => (
                   <div key={player.id} className="flex-shrink-0">
                     {renderPlayerCard(player, isHome)}

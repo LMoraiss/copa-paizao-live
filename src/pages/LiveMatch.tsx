@@ -169,25 +169,30 @@ export const LiveMatch = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {/* Match Header */}
-      <Card className="mb-6">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                {new Date(match.match_date).toLocaleDateString('pt-BR')}
-              </span>
-              <Clock className="h-4 w-4 text-muted-foreground ml-4" />
-              <span className="text-sm text-muted-foreground">
-                {new Date(match.match_date).toLocaleTimeString('pt-BR', {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </span>
+      <Card className="mb-4 sm:mb-6">
+        <CardContent className="p-3 sm:p-6">
+          {/* Mobile-first: Stack info vertically on small screens */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
+            <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+              <div className="flex items-center space-x-1">
+                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">
+                  {new Date(match.match_date).toLocaleDateString('pt-BR')}
+                </span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">
+                  {new Date(match.match_date).toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </span>
+              </div>
               {match.status === 'live' && (
-                <div className="ml-4 bg-primary text-primary-foreground px-3 py-1 rounded-full">
+                <div className="bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs">
                   <LiveMatchTimer 
                     matchDate={match.match_date} 
                     status={match.status}
@@ -199,41 +204,50 @@ export const LiveMatch = () => {
             {getStatusBadge(match.status)}
           </div>
 
-          {/* Teams and Score */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="flex items-center space-x-3">
+          {/* Teams and Score - Mobile optimized layout */}
+          <div className="flex flex-col space-y-4">
+            {/* Score section - prominent on mobile */}
+            <div className="text-center order-2 sm:order-1">
+              {match.status === 'finished' || match.status === 'live' ? (
+                <div className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-3 sm:p-4">
+                  {match.home_score ?? 0} - {match.away_score ?? 0}
+                  {match.status === 'live' && (
+                    <div className="text-xs text-red-500 font-medium animate-pulse mt-1">
+                      🔴 AO VIVO
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-xl sm:text-2xl font-semibold text-muted-foreground bg-muted/30 rounded-xl p-3 sm:p-4">
+                  VS
+                </div>
+              )}
+            </div>
+
+            {/* Teams section - horizontal on mobile */}
+            <div className="flex items-center justify-between order-1 sm:order-2">
+              {/* Home team */}
+              <div className="flex items-center space-x-2 flex-1">
                 {match.home_team.logo_url && (
                   <img 
                     src={match.home_team.logo_url} 
                     alt={match.home_team.name}
-                    className="w-12 h-12 object-contain"
+                    className="w-8 h-8 sm:w-12 sm:h-12 object-contain flex-shrink-0"
                   />
                 )}
                 <Link 
                   to={`/teams/${match.home_team.id}`}
-                  className="text-xl font-semibold hover:text-primary transition-colors"
+                  className="text-sm sm:text-xl font-semibold hover:text-primary transition-colors truncate"
                 >
                   {match.home_team.name}
                 </Link>
               </div>
-            </div>
-            
-            <div className="mx-8 text-center">
-              {match.status === 'finished' || match.status === 'live' ? (
-                <div className="text-4xl font-bold">
-                  {match.home_score ?? 0} - {match.away_score ?? 0}
-                </div>
-              ) : (
-                <div className="text-2xl font-semibold text-muted-foreground">VS</div>
-              )}
-            </div>
-            
-            <div className="flex items-center space-x-4 flex-1 justify-end">
-              <div className="flex items-center space-x-3">
+              
+              {/* Away team */}
+              <div className="flex items-center space-x-2 flex-1 justify-end">
                 <Link 
                   to={`/teams/${match.away_team.id}`}
-                  className="text-xl font-semibold hover:text-primary transition-colors"
+                  className="text-sm sm:text-xl font-semibold hover:text-primary transition-colors truncate text-right"
                 >
                   {match.away_team.name}
                 </Link>
@@ -241,7 +255,7 @@ export const LiveMatch = () => {
                   <img 
                     src={match.away_team.logo_url} 
                     alt={match.away_team.name}
-                    className="w-12 h-12 object-contain"
+                    className="w-8 h-8 sm:w-12 sm:h-12 object-contain flex-shrink-0"
                   />
                 )}
               </div>
@@ -249,8 +263,8 @@ export const LiveMatch = () => {
           </div>
 
           {match.location && (
-            <div className="flex items-center justify-center mt-4 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4 mr-1" />
+            <div className="flex items-center justify-center mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground">
+              <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
               {match.location}
             </div>
           )}
@@ -264,11 +278,11 @@ export const LiveMatch = () => {
 
       {/* Match Content */}
       <Tabs defaultValue="timeline" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
-          <TabsTrigger value="lineups">Escalações</TabsTrigger>
+        <TabsList className={`grid w-full ${match.status === 'finished' ? 'grid-cols-3' : 'grid-cols-2'} h-12 sm:h-10`}>
+          <TabsTrigger value="timeline" className="text-xs sm:text-sm">Timeline</TabsTrigger>
+          <TabsTrigger value="lineups" className="text-xs sm:text-sm">Escalações</TabsTrigger>
           {match.status === 'finished' && (
-            <TabsTrigger value="standings">Classificação</TabsTrigger>
+            <TabsTrigger value="standings" className="text-xs sm:text-sm">Classificação</TabsTrigger>
           )}
         </TabsList>
 

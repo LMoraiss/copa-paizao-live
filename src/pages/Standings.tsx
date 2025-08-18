@@ -193,10 +193,10 @@ export const Standings = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Classificação</h1>
-        <p className="text-muted-foreground">Classificação geral da Copa Paizão</p>
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Classificação</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Classificação geral da Copa Paizão</p>
       </div>
 
       <Card>
@@ -217,19 +217,19 @@ export const Standings = () => {
             </div>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-border">
-              <table className="w-full bg-card">
+              <table className="w-full bg-card min-w-[600px]">
                 <thead>
                   <tr className="bg-gradient-to-r from-muted/50 to-muted/30 border-b-2 border-border">
-                    <th className="text-left p-4 font-bold text-foreground">Pos</th>
-                    <th className="text-left p-4 font-bold text-foreground">Time</th>
-                    <th className="text-center p-4 font-bold text-foreground">PJ</th>
-                    <th className="text-center p-4 font-bold text-foreground">V</th>
-                    <th className="text-center p-4 font-bold text-foreground">E</th>
-                    <th className="text-center p-4 font-bold text-foreground">D</th>
-                    <th className="text-center p-4 font-bold text-foreground">GP</th>
-                    <th className="text-center p-4 font-bold text-foreground">GC</th>
-                    <th className="text-center p-4 font-bold text-foreground">SG</th>
-                    <th className="text-center p-4 font-bold text-foreground">PTS</th>
+                    <th className="text-left p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">Pos</th>
+                    <th className="text-left p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">Time</th>
+                    <th className="text-center p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">PJ</th>
+                    <th className="text-center p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">V</th>
+                    <th className="text-center p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">E</th>
+                    <th className="text-center p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">D</th>
+                    <th className="text-center p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">GP</th>
+                    <th className="text-center p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">GC</th>
+                    <th className="text-center p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">SG</th>
+                    <th className="text-center p-2 sm:p-4 font-bold text-foreground text-xs sm:text-sm">PTS</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -244,73 +244,73 @@ export const Standings = () => {
                         ${!team.isLive && index >= standings.length - 2 ? 'bg-gradient-to-r from-red-50/30 to-red-100/20 hover:from-red-100/40 hover:to-red-200/20' : ''}
                       `}
                     >
-                      <td className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <div className={`
-                            w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
-                            ${index === 0 ? 'bg-yellow-500 text-white shadow-lg' : ''}
-                            ${index === 1 || index === 2 ? 'bg-green-500 text-white shadow-md' : ''}
-                            ${index >= standings.length - 2 ? 'bg-red-500 text-white shadow-md' : ''}
-                            ${index > 2 && index < standings.length - 2 ? 'bg-muted text-muted-foreground' : ''}
-                          `}>
-                            {index + 1}
-                          </div>
-                          {getPositionIcon(index + 1)}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <Link 
-                          to={`/teams/${team.team_id}`}
-                          className="flex items-center space-x-3 hover:text-primary transition-colors font-medium group"
-                        >
-                          {team.team_logo && (
-                            <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
-                              <img 
-                                src={team.team_logo} 
-                                alt={team.team_name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                              />
-                            </div>
-                          )}
-                           <div className="flex flex-col">
-                             <span className="group-hover:font-semibold transition-all">{team.team_name}</span>
-                             {team.isLive && team.liveMatchInfo && (
-                               <div className="text-xs text-red-600 font-medium mt-1 animate-pulse">
-                                 🔴 vs {team.liveMatchInfo.opponentName} {' '}
-                                 <Link 
-                                   to={`/match/${team.liveMatchInfo.matchId}`}
-                                   className="hover:underline"
-                                 >
-                                   {team.liveMatchInfo.isHome 
-                                     ? `${team.liveMatchInfo.homeScore}-${team.liveMatchInfo.awayScore}`
-                                     : `${team.liveMatchInfo.awayScore}-${team.liveMatchInfo.homeScore}`
-                                   }
-                                 </Link>
-                               </div>
-                             )}
+                       <td className="p-1 sm:p-4">
+                         <div className="flex items-center space-x-1 sm:space-x-3">
+                           <div className={`
+                             w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm
+                             ${index === 0 ? 'bg-yellow-500 text-white shadow-lg' : ''}
+                             ${index === 1 || index === 2 ? 'bg-green-500 text-white shadow-md' : ''}
+                             ${index >= standings.length - 2 ? 'bg-red-500 text-white shadow-md' : ''}
+                             ${index > 2 && index < standings.length - 2 ? 'bg-muted text-muted-foreground' : ''}
+                           `}>
+                             {index + 1}
                            </div>
-                        </Link>
-                      </td>
-                      <td className="text-center p-4 font-medium">{team.matches_played}</td>
-                      <td className="text-center p-4 font-semibold text-green-600">{team.wins}</td>
-                      <td className="text-center p-4 font-semibold text-yellow-600">{team.draws}</td>
-                      <td className="text-center p-4 font-semibold text-red-600">{team.losses}</td>
-                      <td className="text-center p-4 font-medium">{team.goals_for}</td>
-                      <td className="text-center p-4 font-medium">{team.goals_against}</td>
-                      <td className="text-center p-4">
-                        <span className={`font-bold px-2 py-1 rounded text-sm ${
-                          team.goal_difference > 0 ? "text-green-700 bg-green-100" : 
-                          team.goal_difference < 0 ? "text-red-700 bg-red-100" : 
-                          "text-gray-700 bg-gray-100"
-                        }`}>
-                          {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
-                        </span>
-                      </td>
-                      <td className="text-center p-4">
-                        <div className="font-bold text-lg text-primary bg-primary/10 rounded-full w-10 h-10 flex items-center justify-center mx-auto">
-                          {team.points}
-                        </div>
-                      </td>
+                           <div className="hidden sm:block">{getPositionIcon(index + 1)}</div>
+                         </div>
+                       </td>
+                       <td className="p-1 sm:p-4">
+                         <Link 
+                           to={`/teams/${team.team_id}`}
+                           className="flex items-center space-x-2 sm:space-x-3 hover:text-primary transition-colors font-medium group touch-manipulation"
+                         >
+                           {team.team_logo && (
+                             <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-shadow flex-shrink-0">
+                               <img 
+                                 src={team.team_logo} 
+                                 alt={team.team_name}
+                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                               />
+                             </div>
+                           )}
+                            <div className="flex flex-col min-w-0">
+                              <span className="group-hover:font-semibold transition-all text-xs sm:text-sm truncate">{team.team_name}</span>
+                              {team.isLive && team.liveMatchInfo && (
+                                <div className="text-[10px] sm:text-xs text-red-600 font-medium mt-1 animate-pulse">
+                                  🔴 vs {team.liveMatchInfo.opponentName.slice(0, 8)}... {' '}
+                                  <Link 
+                                    to={`/match/${team.liveMatchInfo.matchId}`}
+                                    className="hover:underline"
+                                  >
+                                    {team.liveMatchInfo.isHome 
+                                      ? `${team.liveMatchInfo.homeScore}-${team.liveMatchInfo.awayScore}`
+                                      : `${team.liveMatchInfo.awayScore}-${team.liveMatchInfo.homeScore}`
+                                    }
+                                  </Link>
+                                </div>
+                              )}
+                            </div>
+                         </Link>
+                       </td>
+                       <td className="text-center p-1 sm:p-4 font-medium text-xs sm:text-sm">{team.matches_played}</td>
+                       <td className="text-center p-1 sm:p-4 font-semibold text-green-600 text-xs sm:text-sm">{team.wins}</td>
+                       <td className="text-center p-1 sm:p-4 font-semibold text-yellow-600 text-xs sm:text-sm">{team.draws}</td>
+                       <td className="text-center p-1 sm:p-4 font-semibold text-red-600 text-xs sm:text-sm">{team.losses}</td>
+                       <td className="text-center p-1 sm:p-4 font-medium text-xs sm:text-sm">{team.goals_for}</td>
+                       <td className="text-center p-1 sm:p-4 font-medium text-xs sm:text-sm">{team.goals_against}</td>
+                       <td className="text-center p-1 sm:p-4">
+                         <span className={`font-bold px-1 sm:px-2 py-1 rounded text-xs sm:text-sm ${
+                           team.goal_difference > 0 ? "text-green-700 bg-green-100" : 
+                           team.goal_difference < 0 ? "text-red-700 bg-red-100" : 
+                           "text-gray-700 bg-gray-100"
+                         }`}>
+                           {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
+                         </span>
+                       </td>
+                       <td className="text-center p-1 sm:p-4">
+                         <div className="font-bold text-sm sm:text-lg text-primary bg-primary/10 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center mx-auto">
+                           {team.points}
+                         </div>
+                       </td>
                     </tr>
                   ))}
                 </tbody>

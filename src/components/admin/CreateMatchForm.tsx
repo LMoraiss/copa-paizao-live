@@ -176,11 +176,11 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="homeTeam">Time da Casa</Label>
               <Select value={homeTeamId} onValueChange={setHomeTeamId} required>
-                <SelectTrigger>
+                <SelectTrigger className="h-12 sm:h-10">
                   <SelectValue placeholder="Selecione o time da casa" />
                 </SelectTrigger>
                 <SelectContent>
@@ -196,7 +196,7 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
             <div>
               <Label htmlFor="awayTeam">Time Visitante</Label>
               <Select value={awayTeamId} onValueChange={setAwayTeamId} required>
-                <SelectTrigger>
+                <SelectTrigger className="h-12 sm:h-10">
                   <SelectValue placeholder="Selecione o time visitante" />
                 </SelectTrigger>
                 <SelectContent>
@@ -218,6 +218,7 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
               value={matchDate}
               onChange={(e) => setMatchDate(e.target.value)}
               required
+              className="h-12 sm:h-10"
             />
           </div>
 
@@ -228,13 +229,14 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Ex: Estádio Maracanã"
+              className="h-12 sm:h-10"
             />
           </div>
 
           <div>
             <Label htmlFor="stage">Fase</Label>
             <Select value={stage} onValueChange={setStage} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-12 sm:h-10">
                 <SelectValue placeholder="Selecione a fase" />
               </SelectTrigger>
               <SelectContent>
@@ -250,7 +252,7 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
           <div>
             <Label htmlFor="status">Status</Label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger>
+              <SelectTrigger className="h-12 sm:h-10">
                 <SelectValue placeholder="Selecione o status" />
               </SelectTrigger>
               <SelectContent>
@@ -264,7 +266,7 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
           </div>
 
           {status === 'finished' && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="homeScore">Gols Casa</Label>
                 <Input
@@ -274,6 +276,7 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
                   value={homeScore}
                   onChange={(e) => setHomeScore(e.target.value)}
                   placeholder="0"
+                  className="h-12 sm:h-10"
                 />
               </div>
 
@@ -286,18 +289,19 @@ export const CreateMatchForm = ({ match, onSuccess, onCancel }: CreateMatchFormP
                   value={awayScore}
                   onChange={(e) => setAwayScore(e.target.value)}
                   placeholder="0"
+                  className="h-12 sm:h-10"
                 />
               </div>
             </div>
           )}
 
-          <div className="flex space-x-2">
-            <Button type="submit" disabled={isLoading} className="flex-1">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <Button type="submit" disabled={isLoading} className="flex-1 h-12 sm:h-10 touch-manipulation">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEditing ? 'Atualizar' : 'Criar'} Partida
             </Button>
             {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
+              <Button type="button" variant="outline" onClick={onCancel} className="h-12 sm:h-10 touch-manipulation">
                 Cancelar
               </Button>
             )}
